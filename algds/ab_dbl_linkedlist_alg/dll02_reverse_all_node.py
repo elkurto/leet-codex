@@ -60,24 +60,53 @@ class DoublyLinkedList:
       pass
     elif b is None:
       pass
+
+    elif a.next == b and b.prev == a:
+      #   a <--> b
+      a_prev_orig =a.prev
+      b_next_orig =b.next
+
+      if a_prev_orig:
+        a_prev_orig.next =b
+      if b_next_orig:
+        b_next_orig.prev =a
+
+      b.next =a
+      a.prev =b
+
+      a.next =b_next_orig
+      b.prev =a_prev_orig
+
+
+    elif b.next == a and a.prev == b:
+      #   b <--> a
+      cls.swap_node( b, a )
+
     else:
+      # save original references
       b_prev_orig =b.prev
       b_next_orig =b.next
 
       a_prev_orig =a.prev
       a_next_orig =a.next
 
-      b_prev_orig.next =a
+      # link a
+      if b_prev_orig:
+        b_prev_orig.next =a
       a.prev =b_prev_orig
-
-      a_next_orig.prev =b
-      b.prev =a_prev_orig
 
       if b_next_orig:
         b_next_orig.prev =a
+      a.next =b_next_orig
 
+      # link b
       if a_prev_orig:
         a_prev_orig.next =b
+      b.prev =a_prev_orig
+
+      if a_next_orig:
+        a_next_orig.prev =b
+      b.next =a_next_orig
 
 
   def reverse(self):
@@ -90,22 +119,68 @@ class DoublyLinkedList:
     while s < e:
 
       self.swap_node( a, b )
-      a =b.next
-      b =a.prev
+      if s == 0:
+        self.head =b
+        self.tail =a
 
       s+=1
       e-=1
 
+      temp_a =a
+      a =b.next
+      b =temp_a.prev
+
 class TestDoublLinkedList(unittest.TestCase):
   def test_empty_list(self):
-    pass
+    d =DoublyLinkedList(None)
+    d.head =None
+    d.tail =None
+    d.length =0
+
+
+    d.reverse()
+    self.assertEqual( d.length, 0 )
+    self.assertIsNone( d.head)
+
 
   def test_case_length_eq_1(self):
-    pass
+    d =DoublyLinkedList(0)
+    d.reverse()
+    self.assertEqual( d.head.value, 0 )
+    self.assertIsNotNone( d.head)
+    self.assertIsNotNone( d.tail)
+
   def test_case_length_eq_2(self):
-    pass
+    d =DoublyLinkedList(0)
+    d.append(1)
+    head_orig =d.head
+    tail_orig =d.tail
+
+    d.reverse()
+
+    self.assertEqual( d.head.value, 1 )
+    self.assertEqual( d.tail.value, 0 )
+    self.assertIs( d.head , tail_orig)
+    self.assertIs( d.tail , head_orig)
+
+
   def test_case_length_eq_5(self):
-    pass
+    d =DoublyLinkedList(0)
+    d.append(1)
+    d.append(2)
+    d.append(3)
+    d.append(4)
+    head_orig =d.head
+    tail_orig =d.tail
+
+    d.reverse()
+
+    self.assertEqual( d.head.value , 4)
+    self.assertEqual( d.head.next.value , 3)
+    self.assertEqual( d.head.next.next.value, 2)
+    self.assertEqual( d.tail.prev.prev.value, 2)
+    self.assertEqual( d.tail.prev.value , 1)
+    self.assertEqual( d.tail.value , 0)
 
 if __name__ == "__main__":
   unittest.main()
