@@ -16,6 +16,7 @@ Example
 For numbers = [1, -1, 2, 3], the output should be solution(numbers) = 5.
 – There is one pair of indices where the sum of the elements is 20 = 1:
 
+(@see Question 4: https://codesignal.com/blog/interview-prep/example-codesignal-questions/)
 """
 
 class LookUpTableReporter:
