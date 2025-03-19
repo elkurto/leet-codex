@@ -24,22 +24,7 @@ class Node(object):
 		self.right =None # right child
 		self.color =Color.BLACK
 
-	# def make_black(self):
-	# 	self.color =Color.BLACK
-	#
-	# def make_red(self):
-	# 	self.color =Color.RED
-	#
-	# def is_black(self):
-	# 	return self.color is Color.BLACK
-	#
-	# def is_red(self):
-	# 	return self.color is Color.RED
-	#
-	# def size(self):
-	# 	return self.N
-	
-#end-def	
+#end-def
 
 
 class Rbtree(object):

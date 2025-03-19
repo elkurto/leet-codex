@@ -12,7 +12,7 @@ class TestRbtree(unittest.TestCase):
     rbtree =Rbtree()
     self.assertIsNone( rbtree.root )
 
-    
+
   def test_put_get_001(self):
     rbtree =Rbtree()
     rbtree.put(1,'A')
@@ -36,6 +36,19 @@ class TestRbtree(unittest.TestCase):
 
     node_005 =rbtree.get(5)
     self.assertIsNone(node_005)
+
+  def test_put_m_r(self):
+    rbtree =Rbtree()
+
+    # after put m
+    rbtree.put( 'm', 'm');
+    self.assertEqual( 'm', rbtree.root.value  )
+
+    # after put m and put r
+    rbtree.put( 'r', 'r');
+    self.assertEqual( 'r', rbtree.root.value )
+    self.assertIsNone( rbtree.root.right )
+    self.assertEqual( 'm', rbtree.root.left.value )
 
 """
 @todo convert these tests to python
