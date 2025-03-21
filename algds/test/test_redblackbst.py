@@ -50,30 +50,66 @@ class TestRbtree(unittest.TestCase):
     self.assertIsNone( rbtree.root.right )
     self.assertEqual( 'm', rbtree.root.left.value )
 
+  def test_put_m_p_r(self):
+    rbtree =Rbtree()
+    # after put m
+    rbtree.put( 'm', 'm')
+    self.assertEqual( 'm', rbtree.root.value  )
+
+    # after put m and put r
+    rbtree.put( 'r', 'r')
+    self.assertEqual( 'r', rbtree.root.value )
+    self.assertIsNone( rbtree.root.right )
+    self.assertEqual( 'm', rbtree.root.left.value )
+
+    rbtree.put('p','p')
+    self.assertEqual( 'p',  rbtree.root.value )
+    self.assertEqual( 'm' , rbtree.root.left.value )
+    self.assertEqual( 'r',  rbtree.root.right.value )
+
+
+  """
+                      m
+           e----------+-----------r
+       ----+----             -----+----
+       c       l             p        x
+     ==+--   ==+--                  ==+--
+     a       h                      s
+  """
+  def test_put_s_e_a_r_c_h_x_m_p_l(self):
+    rbtree =Rbtree()
+    keystring ='searchxmpl'
+    for key in keystring:
+      rbtree.put( key, key)
+
+
+    # root
+    self.assertEqual( 'm',  rbtree.root.value )
+
+    # right sub tree of root
+    self.assertEqual('r', rbtree.root.right.value)
+    self.assertEqual( 'p', rbtree.root.right.left.value)
+    self.assertEqual( 'x', rbtree.root.right.right.value )
+    self.assertEqual( 's', rbtree.root.right.right.left.value )
+
+    # left sub tree of root
+    self.assertEqual('e', rbtree.root.left.value )
+
+    # left subtree of e
+    self.assertEqual('c', rbtree.root.left.left.value  )
+    self.assertEqual('a', rbtree.root.left.left.left.value)
+    self.assertIsNone( rbtree.root.left.left.right )
+
+    # right subtree of e
+    self.assertEqual('l', rbtree.root.left.right.value)
+    self.assertEqual('h', rbtree.root.left.right.left.value)
+    self.assertIsNone(rbtree.root.left.right.right )
+
+
 """
 @todo convert these tests to python
 describe('test Rbtree 001', () => {
 
-  it( 'init Rbtree', () => {
-    let rbtree =new Rbtree();
-    expect( rbtree.root ).toBeNull();
-  })
-
-  it( 'Rbtree::put - m', () =>{
-    let rbtree =new Rbtree();
-    rbtree.put( 'm', 'm');
-    expect( rbtree.root.val ).toBe('m');
-  })
-
-  it( 'Rbtree::put - m,r', () =>{
-    let rbtree =new Rbtree();
-    rbtree.put( 'm', 'm');
-    expect( rbtree.root.val ).toBe('m');
-    rbtree.put( 'r', 'r');
-    expect( rbtree.root.val ).toBe('r');
-    expect( rbtree.root.right ).toBeNull();
-    expect( rbtree.root.left.val ).toBe('m');
-  })
 
   it( 'Rbtree::put - m,r,p', () =>{
     let rbtree =new Rbtree();
