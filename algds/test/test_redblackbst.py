@@ -105,6 +105,21 @@ class TestRbtree(unittest.TestCase):
     self.assertEqual('h', rbtree.root.left.right.left.value)
     self.assertIsNone(rbtree.root.left.right.right )
 
+  def test_contains_searchxmpl(self):
+    rbtree =Rbtree()
+    keystring ='searchxmpl'
+    for key in keystring:
+      rbtree.put( key, key)
+
+    self.assertTrue( rbtree.contains( 'm' ))
+    self.assertFalse( rbtree.contains( 'z' ))
+    self.assertTrue( rbtree.contains( 'h' ))
+    self.assertTrue( rbtree.contains( 's' ))
+    self.assertFalse( rbtree.contains( None ))
+    self.assertTrue( rbtree.contains( 'r' ))
+    self.assertTrue( rbtree.contains( 'x' ))
+    
+
 
 """
 @todo convert these tests to python
