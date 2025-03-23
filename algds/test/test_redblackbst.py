@@ -118,7 +118,15 @@ class TestRbtree(unittest.TestCase):
     self.assertFalse( rbtree.contains( None ))
     self.assertTrue( rbtree.contains( 'r' ))
     self.assertTrue( rbtree.contains( 'x' ))
-    
+
+  def test_delete_r_from_searchxmpl(self):
+    rbtree =Rbtree()
+    keystring = 'searchxmpl'
+    for key in keystring:
+      rbtree.put(key, key)
+
+    rbtree.delete( 'r' )
+    self.assertFalse( rbtree.contains( 'r' ))
 
 
 """

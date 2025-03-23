@@ -64,27 +64,27 @@ class Rbtree(object):
 
 		return self.get(key) is not None
 
-	def put(self, key, val ):
+	def put(self, key, value ):
 
 		h =self.root
-		self.root =self._put( h, key, val)
+		self.root =self._put( h, key, value)
 		self.root.color =Color.BLACK
 
-	def _put(self, h, key , val ):
+	def _put(self, h, key , value ):
 		if h is None:
-			rbnode =Node(key,val)
+			rbnode =Node(key,value)
 			rbnode.color =Color.RED
 			return rbnode
 
 
 		icmp =self.compare_key_fn(key, h.key)
 
-		if icmp == 0 : # ,then key already exists, so replace h.val and return null
-			h.val =val
+		if icmp == 0 : # ,then key already exists, so replace h.value and return null
+			h.value =value
 		elif icmp < 0 :
-			h.left =self._put(h.left, key,val)
+			h.left =self._put(h.left, key,value)
 		elif icmp > 0 :
-			h.right =self._put(h.right, key, val )
+			h.right =self._put(h.right, key, value )
 
 
 		# fix-up any right leaning links and return new h to ascend recursively
@@ -218,7 +218,7 @@ class Rbtree(object):
 			if self.compare_key_fn(key, h.key) == 0:
 				x = self._min(h.right)
 				h.key = x.key
-				h.val = x.val
+				h.value = x.value
 
 				h.right = self._delete_min(h.right)
 			else:
@@ -280,7 +280,7 @@ class Rbtree(object):
 			return
 
 		self._to_list( h.left, values )
-		values.append( h.val )
+		values.append( h.value )
 		self._to_list( h.right, values )
 
 
