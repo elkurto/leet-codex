@@ -128,6 +128,36 @@ class TestRbtree(unittest.TestCase):
     rbtree.delete( 'r' )
     self.assertFalse( rbtree.contains( 'r' ))
 
+  def test_delete_m_from_searchxmpl(self):
+    rbtree =Rbtree()
+    keystring = 'searchxmpl'
+    for key in keystring:
+      rbtree.put(key, key)
+
+    rbtree.delete( 'm' )
+    self.assertFalse( rbtree.contains( 'm' ))
+    self.assertEqual( 'p', rbtree.root.value )
+
+  def test_delete_l_from_searchxmpl(self):
+    rbtree =Rbtree()
+    keystring = 'searchxmpl'
+    for key in keystring:
+      rbtree.put(key, key)
+
+    rbtree.delete( 'l' )
+    self.assertFalse( rbtree.contains( 'l' ))
+
+  def test_to_list_in_order(self):
+
+    rbtree =Rbtree()
+    keystring ='searchxmpl'
+    for key in keystring:
+      rbtree.put( key, key)
+
+    list_value =rbtree.to_list()
+    self.assertEqual( len(keystring), len(list_value) )
+    self.assertEqual( 'a,c,e,h,l,m,p,r,s,x', ','.join(list_value))
+
 
 """
 @todo convert these tests to python

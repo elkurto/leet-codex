@@ -11,10 +11,12 @@ def compare_key_fn_default(a, b):
 	return rval
 
 
-class Color(enum.Enum):
-	RED =True
-	BLACK =False
+#class Color(enum.Enum):
+#	RED =True
+#	BLACK =False
 
+RED =True
+BLACK =False
 
 class Node(object):
 	def __init__(self,key, value):
@@ -22,7 +24,7 @@ class Node(object):
 		self.value =value
 		self.left =None  # left child
 		self.right =None # right child
-		self.color =Color.BLACK
+		self.color =BLACK
 
 #end-def
 
@@ -37,9 +39,6 @@ class Rbtree(object):
 		self.root =None
 		self.compare_key_fn =compare_key_fn if compare_key_fn else compare_key_fn_default
 
-	@classmethod
-	def is_red(cls, node):
-		return node and node.color is Color.RED
 
 	def get(self, key):
 		return self._get(key, self.root )
@@ -68,12 +67,12 @@ class Rbtree(object):
 
 		h =self.root
 		self.root =self._put( h, key, value)
-		self.root.color =Color.BLACK
+		self.root.color =BLACK
 
 	def _put(self, h, key , value ):
 		if h is None:
 			rbnode =Node(key,value)
-			rbnode.color =Color.RED
+			rbnode.color =RED
 			return rbnode
 
 
@@ -99,6 +98,15 @@ class Rbtree(object):
 
 		return h
 
+	@classmethod
+	def is_red(cls, node):
+		return node is not None and node.color == RED
+
+	@classmethod
+	def _flip_colors(cls, h):
+		h.color =not h.color
+		h.left.color =not h.left.color
+		h.right.color =not h.right.color
 
 	"""
 	*               S=h                      E=x
@@ -120,7 +128,7 @@ class Rbtree(object):
 		h.left =x.right
 		x.right =h
 		x.color =h.color
-		h.color =Color.RED # ??? this assumes that initially h.left is RED
+		h.color =RED # ??? this assumes that initially h.left is RED
 
 		return x
 
@@ -145,15 +153,9 @@ class Rbtree(object):
 		h.right =x.left
 		x.left =h
 		x.color =h.color
-		h.color =Color.RED  # ??? this assumes that initially h.right is RED
+		h.color =RED  # ??? this assumes that initially h.right is RED
 
 		return x
-
-	@classmethod
-	def _flip_colors(cls, h):
-		h.color =Color.RED
-		h.left.color =Color.BLACK
-		h.right.color =Color.BLACK
 
 	def is_empty(self):
 		return self.root is None
@@ -167,12 +169,12 @@ class Rbtree(object):
 			return
 
 		if not self.is_red(self.root.left) and not self.is_red(self.root.right):
-			self.root.color =Color.RED
+			self.root.color =RED
 
 
 		self.root =self._delete( self.root, key )
 		if not self.is_empty():
-			self.root.color =Color.BLACK
+			self.root.color =BLACK
 
 	# delete the key-value pair with the minimum key rooted at h
 	def _delete_min(self, h):
@@ -181,9 +183,9 @@ class Rbtree(object):
 
 		if not self.is_red(h.left) and not self.is_red(h.left.left):
 			h = self._move_red_left(h)
-
-			h.left = self._delete_min(h.left)
-			return self._balance(h)
+		#
+		h.left = self._delete_min(h.left)
+		return self._balance(h)
 
 	# return the node with the minimum key in subtree, x
 	def _min( self, x ):
@@ -222,7 +224,7 @@ class Rbtree(object):
 
 				h.right = self._delete_min(h.right)
 			else:
-					h.right = self._delete(h.right, key)
+				h.right = self._delete(h.right, key)
 
 		return self._balance(h)
 	# end-fn _delete
@@ -236,8 +238,8 @@ class Rbtree(object):
 		self._flip_colors(h)
 		if self.is_red(h.right.left):
 			h.right = self._rotate_right(h.right)
-		h = self._rotate_left(h)
-		self._flip_colors(h)
+			h = self._rotate_left(h)
+			self._flip_colors(h)
 
 		return h
 
