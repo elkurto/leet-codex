@@ -1,10 +1,21 @@
 import sys
 
+"""
+USAGE:
+  python3 algds/aa_codility/c00_dec2bin.py 22
+  // returns +10110
+
+  python3 algds/aa_codility/c00_dec2bin.py 11
+  // returns +1011
+
+"""
 def dec2bin( n ):
   """
   Convert a base10 int to base2 int
-  :param n: int
-  :return:
+  This is a custom version of :builtin_function:"bin( n )"
+  :param n: int a base10 integer
+  :return: a stringified signed base2 representation of :param:n
+
   """
 
   dividend =abs(int( n ))
