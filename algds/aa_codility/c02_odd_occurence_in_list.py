@@ -2,9 +2,15 @@ import sys
 from collections import defaultdict
 
 """
-Return a list of values in :param:list that occur an odd number of times.
+@param: ary : a list of any type
+
+@return - Return a list of values in :param:list that occur an odd number of times.
+
 e.g.   find_unpaired_elements_in_list( [3,9,7,3,9,6] ) 
-   // returns [7,6] 
+   // returns [7,6]
+   
+e.g.   find_unpaired_elements_in_list( [1,2,2, 10,10, 7,7,9,9,9, 4,4,4,4, 5,5,5,5,5] ) 
+   // returns [1,9,5]     
 """
 def find_unpaired_elements_in_list(ary):
   s =set()
