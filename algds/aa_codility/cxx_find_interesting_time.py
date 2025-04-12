@@ -14,8 +14,10 @@ def compute_n_interesting_time_in_range_inclusive( hhmmss_start, hhmmss_end):
   :param hhmmss_end:    str   HH:MM:SS  end-time
   :return:
   """
-  cit =CalculatorInterstingTime(s_hhmmss_start)
+  cit =CalculatorInterstingTime(hhmmss_start)
   n_interesting_time_in_range =0
+  i =0
+
   while i < 86400: # 86400 = 24*24*60 = number of seconds in 24 hr period
     if cit.is_interesting():
       n_interesting_time_in_range +=1
@@ -24,8 +26,10 @@ def compute_n_interesting_time_in_range_inclusive( hhmmss_start, hhmmss_end):
       break
     else:
       cit.increment_by_1_second()
+
+    i+=1
   #end-while
-  
+
   return n_interesting_time_in_range
 
 class CalculatorInterstingTime:
