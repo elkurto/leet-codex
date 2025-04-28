@@ -1,5 +1,10 @@
 from collections import deque
 
+"""
+- create and compute longest chain of connected nodes in a directed graph with cycles.
+- the efficient solution uses dynamic programming to store longest path candidates.
+"""
+
 class AdjMatrix:
   def __init__(self, *values):
     self.values =values
@@ -126,40 +131,40 @@ class AdjMatrix:
     #end-for-k
 
 
-  def compute_all_chains(self, chain, list_edge, list_chain ):
-    av =self.values
-    for edge in list_edge:
-      if edge[1] == chain[-1][0]:  # can connect edge-tail to next-edge-head
-        pass
-    return
-
-  def get_vertex_by_index(self, idx):
-    return self.values[idx]
-
-  def vlast(self, idx):
-    # get the last char/entry in self.values[idx]
-    return self.get_vertex_by_index(idx)[-1]
-
-  def vfirst(self, idx):
-    # get the first char/entry in self.values[idx]
-    return self.get_vertex_by_index(idx)[0]
-
-  def can_prefix_edge_to_chain(self, edge_candidate, chain):
-    b =False
-
-    # [last_char_of_candidate == first_char_of_chain
-    # AND first_char_of_candidate not in chain already
-    # ]
-    if self.vfirst(edge_candidate[-1]) == self.vfirst(chain[0][0]): # same vertex in
-
-      if edge_candidate[0] != chain[-1][1]:
-        b =True
-        for edge_in_chain  in chain:
-          b =edge_candidate[-1] == edge_in_chain[1]
-          if not b:
-            break
-
-    return b
+  # def compute_all_chains(self, chain, list_edge, list_chain ):
+  #   av =self.values
+  #   for edge in list_edge:
+  #     if edge[1] == chain[-1][0]:  # can connect edge-tail to next-edge-head
+  #       pass
+  #   return
+  #
+  # def get_vertex_by_index(self, idx):
+  #   return self.values[idx]
+  #
+  # def vlast(self, idx):
+  #   # get the last char/entry in self.values[idx]
+  #   return self.get_vertex_by_index(idx)[-1]
+  #
+  # def vfirst(self, idx):
+  #   # get the first char/entry in self.values[idx]
+  #   return self.get_vertex_by_index(idx)[0]
+  #
+  # def can_prefix_edge_to_chain(self, edge_candidate, chain):
+  #   b =False
+  #
+  #   # [last_char_of_candidate == first_char_of_chain
+  #   # AND first_char_of_candidate not in chain already
+  #   # ]
+  #   if self.vfirst(edge_candidate[-1]) == self.vfirst(chain[0][0]): # same vertex in
+  #
+  #     if edge_candidate[0] != chain[-1][1]:
+  #       b =True
+  #       for edge_in_chain  in chain:
+  #         b =edge_candidate[-1] == edge_in_chain[1]
+  #         if not b:
+  #           break
+  #
+  #   return b
 
 
 
