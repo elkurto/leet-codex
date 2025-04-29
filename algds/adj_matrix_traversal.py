@@ -33,15 +33,22 @@ class AdjMatrix:
   def compute_longest_chain(self):
     self.list_edge =self.create_adj_matrix(self.values)
     self.map_end_edge_to_longest_chain =dict()
+    
+    self.compute_list_of_chain_start_that_end_with_chain(None,None, None)
+    #for idx_of_edge , edge in enumerate(self.list_edge):
+      #list_chain_that_ends_with_edge_idx =self.compute_list_chain_that_ends_with_edge_idx( idx_of_edge )
+      #longest_chain_candidate =self.max_chain(list_chain_that_ends_with_edge_idx)
+      #self.list_chain_of_edge[idx_of_edge] =longest_chain_candidate
 
-    for idx_of_edge , edge in enumerate(self.list_edge):
+    # find and return longest chain in self.map_end_edge_to_longest_chain
+    longest_chain_globally =None
+    for chain in self.map_end_edge_to_longest_chain.values():
+      if longest_chain_globally is None:
+        longest_chain_globally =chain
+      elif len(chain) > len(longest_chain_globally):
+        longest_chain_globally =chain
 
-      list_chain_that_ends_with_edge_idx =self.compute_list_chain_that_ends_with_edge_idx( idx_of_edge )
-      longest_chain_candidate =self.max_chain(list_chain_that_ends_with_edge_idx)
-      self.list_chain_of_edge[idx_of_edge] =longest_chain_candidate
-
-
-    return self.max_chain(self.list_chain_of_edge)
+    return longest_chain_globally
 
   def max_chain(self, list_of_chain):
     longest_chain =[]
@@ -115,7 +122,10 @@ class AdjMatrix:
     #
     # return list_chain
 
-  def compute_list_of_chain_start_that_end_with_chain(self, chain, list_edge, list_chain):
+  def compute_list_of_chain_start_that_end_with_chain(self, chain=None, list_edge=None, list_chain=None):
+    chain =chain if chain else []
+    list_edge =list_edge if list_edge else self.list_edge.copy()
+    list_chain =list_chain if list_chain else []
 
     for k, edge_candidate in enumerate(list_edge):
       if self.can_connect( edge_candidate, chain ):
