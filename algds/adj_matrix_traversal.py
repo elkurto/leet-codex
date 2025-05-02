@@ -9,7 +9,7 @@ class AdjMatrix:
   def __init__(self, *values):
     self.values =values
     self.list_edge =self.create_adj_matrix(values)
-    self.map_end_edge_to_longest_chain =dict()
+
     # self.list_chain_of_edge =[] # map of index_of_vertex to a chains that ends with value at index_of_vertex
     #                      # e.g.
     #                      # Given values =[cd, dz, za, ab]
@@ -30,23 +30,36 @@ class AdjMatrix:
       print( "{0} : {1} --> {2}".format( link, self.values[link[0]], self.values[link[1]]))
 
 
-  def compute_longest_chain(self):
-    self.list_edge =self.create_adj_matrix(self.values)
-    self.map_end_edge_to_longest_chain =dict()
-    
-    self.compute_list_of_chain_start_that_end_with_chain(None,None, None)
-    #for idx_of_edge , edge in enumerate(self.list_edge):
-      #list_chain_that_ends_with_edge_idx =self.compute_list_chain_that_ends_with_edge_idx( idx_of_edge )
-      #longest_chain_candidate =self.max_chain(list_chain_that_ends_with_edge_idx)
-      #self.list_chain_of_edge[idx_of_edge] =longest_chain_candidate
+  # def compute_longest_chain(self):
+  #   self.list_edge =self.create_adj_matrix(self.values)
+  #   self.map_end_edge_to_longest_chain =dict()
+  #
+  #   self.compute_list_of_chain_start_that_end_with_chain(None,None, None)
+  #   #for idx_of_edge , edge in enumerate(self.list_edge):
+  #     #list_chain_that_ends_with_edge_idx =self.compute_list_chain_that_ends_with_edge_idx( idx_of_edge )
+  #     #longest_chain_candidate =self.max_chain(list_chain_that_ends_with_edge_idx)
+  #     #self.list_chain_of_edge[idx_of_edge] =longest_chain_candidate
+  #
+  #   # find and return longest chain in self.map_end_edge_to_longest_chain
+  #   longest_chain_globally =None
+  #   for chain in self.map_end_edge_to_longest_chain.values():
+  #     if longest_chain_globally is None:
+  #       longest_chain_globally =chain
+  #     elif len(chain) > len(longest_chain_globally):
+  #       longest_chain_globally =chain
+  #
+  #   return longest_chain_globally
 
-    # find and return longest chain in self.map_end_edge_to_longest_chain
+  def compute_longest_chain_globally(self):
+    map_vertex_id_end_to_longest_chain =self.compute_map_vertex_id_end_to_longest_chain()
     longest_chain_globally =None
-    for chain in self.map_end_edge_to_longest_chain.values():
-      if longest_chain_globally is None:
-        longest_chain_globally =chain
-      elif len(chain) > len(longest_chain_globally):
-        longest_chain_globally =chain
+
+    for chain in map_vertex_id_end_to_longest_chain.values():
+      if longest_chain_globally:
+        if len(longest_chain_globally) < len(chain):
+          longest_chain_globally =chain
+      else:
+        longest_chain_globally = chain
 
     return longest_chain_globally
 
@@ -89,56 +102,98 @@ class AdjMatrix:
 
 
 
-  def compute_list_chain_that_ends_with_edge_idx(self, idx_of_edge):
+  # def compute_list_chain_that_ends_with_edge_idx(self, idx_of_edge):
+  #
+  #   list_chain =[]
+  #   list_edge =self.shallow_copy_list_exclude_index( self.list_edge, idx_of_edge)
+  #   chain =deque( [self.list_edge[idx_of_edge]] )
+  #
+  #
+  #
+  #   #   if edge.tail == chain[0].head
+  #   #   and :vertex:edge.tail not in chain already
+  #   #   then
+  #   #     a. chain.appendleft(0, edge)  # push edge to front of chain
+  #   #     b. recurse to find next preceding link
+  #   #     c. pop
+  #   for j, edge_candidate in enumerate(list_edge):
+  #     if self.can_connect( edge_candidate, chain ):
+  #       chain.appendleft( edge_candidate )
+  #       ## recurse
+  #       sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j)
+  #       self.compute_list_of_chain_start_that_end_with_chain( chain, sub_list_edge, list_chain)
+  #       chain.popleft()
+  #
+  #   return list_chain
 
-    list_chain =[]
-    list_edge =self.shallow_copy_list_exclude_index( self.list_edge, idx_of_edge)
-    chain =deque( [self.list_edge[idx_of_edge]] )
+  def compute_map_vertex_id_end_to_longest_chain(self):
+    map_vertex_id_end_to_longest_chain =dict()
+    for i, edge_candidate in enumerate(self.list_edge):
+      chain =deque([edge_candidate])
+      sub_list_edge = self.shallow_copy_list_exclude_index(self.list_edge, i)
+      self.recurse_compute_map_vertex_id_end_to_longest_chain( chain, sub_list_edge, map_vertex_id_end_to_longest_chain, i )
 
+    # print map_vertex_id_end_to_longest_chain
+    for key in map_vertex_id_end_to_longest_chain:
+      msg ="{0} ={1}".format( key, map_vertex_id_end_to_longest_chain[key])
+      print( msg )
 
+    return map_vertex_id_end_to_longest_chain
 
-    #   if edge.tail == chain[0].head
-    #   and :vertex:edge.tail not in chain already
-    #   then
-    #     a. chain.appendleft(0, edge)  # push edge to front of chain
-    #     b. recurse to find next preceding link
-    #     c. pop
+  def recurse_compute_map_vertex_id_end_to_longest_chain(self, chain, list_edge, map_longest, i):
     for j, edge_candidate in enumerate(list_edge):
-      if self.can_connect( edge_candidate, chain ):
-        chain.appendleft( edge_candidate )
-        ## recurse
-        sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j)
-        self.compute_list_of_chain_start_that_end_with_chain( chain, sub_list_edge, list_chain)
-        chain.popleft()
+      if self.can_connect(edge_candidate, chain):
+        #
+        dup_chain =chain.copy()
+        dup_chain.appendleft( edge_candidate )
+        sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j )
 
-    return list_chain
+        # conditionally store dup_chain
+        self._conditionally_update_map_longest( map_longest, dup_chain)
 
-    #   if self.can_prefix_edge_to_chain( edge_candidate, chain):
-    #
-    #     sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j)
-    #     chain.appendleft(edge_candidate)
-    #     self.compute_all_chains(chain, sub_list_edge, list_chain )
-    #     chain.popleft()
-    #
-    # return list_chain
+        # check for longer chain with same suffix dup_chain
+        self.recurse_compute_map_vertex_id_end_to_longest_chain( dup_chain, sub_list_edge, map_longest, i+1)
 
-  def compute_list_of_chain_start_that_end_with_chain(self, chain=None, list_edge=None, list_chain=None):
-    chain =chain if chain else []
-    list_edge =list_edge if list_edge else self.list_edge.copy()
-    list_chain =list_chain if list_chain else []
+  @classmethod
+  def _conditionally_update_map_longest(cls, map_longest, chain_candidate):
+    key_vertex_id_last =chain_candidate[-1][1]
+    existing_chain =map_longest.get(key_vertex_id_last, None)
+    if existing_chain:
+      if len(existing_chain) < len(chain_candidate):
+        map_longest[key_vertex_id_last] =chain_candidate
+    else:
+      map_longest[key_vertex_id_last] =chain_candidate
 
-    for k, edge_candidate in enumerate(list_edge):
-      if self.can_connect( edge_candidate, chain ):
-        chain.appendleft( edge_candidate )
-        ## recurse
-        sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, k)
-        self.compute_list_of_chain_start_that_end_with_chain( chain, sub_list_edge, list_chain)
-        chain.popleft()
 
-      # if at end of list add chain to list_chain
-      if edge_candidate == list_edge[-1]:
-        list_chain.append(  chain )
-    #end-for-k
+  # def compute_list_of_chain_start_that_end_with_chain(self, chain=None, list_edge=None, iteration=0):
+  #
+  #
+  #   for i, edge_candidate in enumerate(list_edge):
+  #     chain =chain if iteration == 0 else deque([])
+  #     list_edge = self.shallow_copy_list_exclude_index(self.list_edge, i)
+  #
+  #     if len(chain) == 0 :
+  #       chain.appendleft(edge_candidate)
+  #     elif self.can_connect(edge_candidate, chain):
+  #       # then connect and recurse
+  #       for j, edge_candidate in list_edge:
+  #         chain.appendleft( edge_candidate )
+  #         dup_chain =chain.copy()
+  #         sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, i)
+  #
+  #         self.compute_list_of_chain_start_that_end_with_chain(dup_chain, sub_list_edge, iteration+1)
+  #         chain.popleft(  )
+  #
+  #       #end-for-j
+  #     #end-if-else
+  #
+  #     # if at end of list, conditionally add chain to list_chain
+  #     if edge_candidate == list_edge[-1]:
+  #       # if len(chain) > longest_chain_with_same_edge_tail
+  #       # then replace longest_chain_with_same_edge_tail[chain[-1][1] =chain
+  #
+  #
+  #   #end-for-i
 
 
   # def compute_all_chains(self, chain, list_edge, list_chain ):
@@ -184,3 +239,5 @@ class AdjMatrix:
 if __name__ == "__main__":
   adj_matrix =AdjMatrix("ab", "bc", "bd", "ca", "de", "ef")
   adj_matrix.print_matrix()
+  longest_chain =adj_matrix.compute_longest_chain_globally()
+  print("len(longest_chain) ={0}".format(len(longest_chain)))
