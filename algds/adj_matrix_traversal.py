@@ -3,6 +3,25 @@ from collections import deque
 """
 - create and compute longest chain of connected nodes in a directed graph with cycles.
 - the efficient solution uses dynamic programming to store longest path candidates.
+
+
+usage: 
+  python3 algds/adj_matrix_traversal.py
+   
+  (0, 1) : ab --> bc
+  (0, 2) : ab --> bd
+  (1, 3) : bc --> ca
+  (2, 4) : bd --> de
+  (3, 0) : ca --> ab
+  (4, 5) : de --> ef
+  1 =deque([(3, 0), (0, 1)])
+  2 =deque([(1, 3), (3, 0), (0, 2)])
+  3 =deque([(0, 1), (1, 3)])
+  4 =deque([(1, 3), (3, 0), (0, 2), (2, 4)])
+  0 =deque([(1, 3), (3, 0)])
+  5 =deque([(1, 3), (3, 0), (0, 2), (2, 4), (4, 5)])
+  len(longest_chain) =5
+
 """
 
 class AdjMatrix:
@@ -28,27 +47,6 @@ class AdjMatrix:
   def print_matrix(self):
     for link in self.list_edge:
       print( "{0} : {1} --> {2}".format( link, self.values[link[0]], self.values[link[1]]))
-
-
-  # def compute_longest_chain(self):
-  #   self.list_edge =self.create_adj_matrix(self.values)
-  #   self.map_end_edge_to_longest_chain =dict()
-  #
-  #   self.compute_list_of_chain_start_that_end_with_chain(None,None, None)
-  #   #for idx_of_edge , edge in enumerate(self.list_edge):
-  #     #list_chain_that_ends_with_edge_idx =self.compute_list_chain_that_ends_with_edge_idx( idx_of_edge )
-  #     #longest_chain_candidate =self.max_chain(list_chain_that_ends_with_edge_idx)
-  #     #self.list_chain_of_edge[idx_of_edge] =longest_chain_candidate
-  #
-  #   # find and return longest chain in self.map_end_edge_to_longest_chain
-  #   longest_chain_globally =None
-  #   for chain in self.map_end_edge_to_longest_chain.values():
-  #     if longest_chain_globally is None:
-  #       longest_chain_globally =chain
-  #     elif len(chain) > len(longest_chain_globally):
-  #       longest_chain_globally =chain
-  #
-  #   return longest_chain_globally
 
   def compute_longest_chain_globally(self):
     map_vertex_id_end_to_longest_chain =self.compute_map_vertex_id_end_to_longest_chain()
