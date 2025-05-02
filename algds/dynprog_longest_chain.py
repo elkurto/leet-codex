@@ -2,34 +2,38 @@ from collections import deque
 
 """
 - create and compute longest chain of connected nodes in a directed graph with cycles.
-- the efficient solution uses dynamic programming to store longest path candidates.
+- the efficient solution uses dynamic programming solution to store 
+  pre-computed longest path candidates.
 
 
 usage: 
-  python3 algds/adj_matrix_traversal.py
    
+  python3 algds/dynprog_longest_chain.py 
+
   (0, 1) : ab --> bc
   (0, 2) : ab --> bd
   (1, 3) : bc --> ca
   (2, 4) : bd --> de
   (3, 0) : ca --> ab
   (4, 5) : de --> ef
-  1 =deque([(3, 0), (0, 1)])
-  2 =deque([(1, 3), (3, 0), (0, 2)])
-  3 =deque([(0, 1), (1, 3)])
-  4 =deque([(1, 3), (3, 0), (0, 2), (2, 4)])
-  0 =deque([(1, 3), (3, 0)])
-  5 =deque([(1, 3), (3, 0), (0, 2), (2, 4), (4, 5)])
-  len(longest_chain) =5
+  0_1 =deque([(3, 0), (0, 1)])
+  0_2 =deque([(1, 3), (3, 0), (0, 2)])
+  1_3 =deque([(0, 1), (1, 3)])
+  2_4 =deque([(1, 3), (3, 0), (0, 2), (2, 4)])
+  3_0 =deque([(1, 3), (3, 0)])
+  4_5 =deque([(1, 3), (3, 0), (0, 2), (2, 4), (4, 5)])
+  len(longest_chain) =6
+
 
 """
 
-class AdjMatrix:
+class FinderLongestChain:
   def __init__(self, *values):
     self.values =values
     self.list_edge =self.create_adj_matrix(values)
 
-  def create_adj_matrix(self, values):
+  @classmethod
+  def create_adj_matrix(cls, values):
     adj_matrix =[]
 
     for i,si in enumerate(values):
@@ -56,7 +60,8 @@ class AdjMatrix:
 
     return longest_chain_globally
 
-  def max_chain(self, list_of_chain):
+  @classmethod
+  def max_chain(cls, list_of_chain):
     longest_chain =[]
     for chain in list_of_chain:
       if len(longest_chain) < len(chain):
@@ -64,7 +69,8 @@ class AdjMatrix:
 
     return longest_chain
 
-  def shallow_copy_list_exclude_index(self, list_src, index):
+  @classmethod
+  def shallow_copy_list_exclude_index(cls, list_src, index):
     list_dest =[]
     for i,element in enumerate(list_src):
       if i != index:
@@ -110,30 +116,68 @@ class AdjMatrix:
   def recurse_compute_map_vertex_id_end_to_longest_chain(self, chain, list_edge, map_longest, i):
     for j, edge_candidate in enumerate(list_edge):
       if self.can_connect(edge_candidate, chain):
-        #
-        dup_chain =chain.copy()
-        dup_chain.appendleft( edge_candidate )
-        sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j )
 
-        # conditionally store dup_chain
-        self._conditionally_update_map_longest( map_longest, dup_chain)
+        # lookup and conditionally use cached longest map that ends with edge_candidate.
+        key =self.convert_edge_to_key(edge_candidate)
+        precomputed_longest_chain =map_longest.get(key, None)
+        if precomputed_longest_chain and self.can_connect_chain_to_chain( precomputed_longest_chain, chain ):
+          # use cached pre-computed longest chain that ends with edge_candidate
+          # nb: in this case -- fn does not recurse -- instead use a pre-computed result.
+          longest_chain_that_ends_with_edge_candidate  =map_longest.get(key)
+          dup_chain =chain.copy()
 
-        # check for longer chain with same suffix dup_chain
-        self.recurse_compute_map_vertex_id_end_to_longest_chain( dup_chain, sub_list_edge, map_longest, i+1)
+          for edge in reversed(longest_chain_that_ends_with_edge_candidate):
+            dup_chain.appendleft( edge )
+
+          self._conditionally_update_map_longest( map_longest, dup_chain)
+
+        else:
+          # nb: in this case -- fn does recurse
+          # compute and cache longest chain for first time.
+          dup_chain =chain.copy()
+          dup_chain.appendleft( edge_candidate )
+          sub_list_edge =self.shallow_copy_list_exclude_index(list_edge, j )
+
+          # conditionally store dup_chain
+          self._conditionally_update_map_longest( map_longest, dup_chain)
+
+          # check for longer chain with same suffix dup_chain
+          self.recurse_compute_map_vertex_id_end_to_longest_chain( dup_chain, sub_list_edge, map_longest, i+1)
+
+  @classmethod
+  def can_connect_chain_to_chain(cls, chain_head, chain_tail):
+
+    predicate_a =cls.is_edge_tail_same_as_chain_first_head(chain_head[-1], chain_tail)
+
+    unique_val_in_chain_tail =[x[0] for x in chain_tail]
+    unique_val_in_chain_tail.append( chain_tail[-1][1] )
+
+    predicate_b =False
+    for edge_in_chain_head in chain_head:
+      predicate_b =edge_in_chain_head[0] in unique_val_in_chain_tail
+      if predicate_b:
+        break
+
+    return predicate_a and not predicate_b
+
+
 
   @classmethod
   def _conditionally_update_map_longest(cls, map_longest, chain_candidate):
-    key_vertex_id_last =chain_candidate[-1][1]
-    existing_chain =map_longest.get(key_vertex_id_last, None)
+    key_edge_at_chain_tail =cls.convert_edge_to_key(chain_candidate[-1])
+    existing_chain =map_longest.get(key_edge_at_chain_tail, None)
     if existing_chain:
       if len(existing_chain) < len(chain_candidate):
-        map_longest[key_vertex_id_last] =chain_candidate
+        map_longest[key_edge_at_chain_tail] =chain_candidate
     else:
-      map_longest[key_vertex_id_last] =chain_candidate
+      map_longest[key_edge_at_chain_tail] =chain_candidate
 
+  @classmethod
+  def convert_edge_to_key(cls, edge):
+    return "{0}_{1}".format( edge[0], edge[1])
 
 if __name__ == "__main__":
-  adj_matrix =AdjMatrix("ab", "bc", "bd", "ca", "de", "ef")
-  adj_matrix.print_matrix()
-  longest_chain =adj_matrix.compute_longest_chain_globally()
-  print("len(longest_chain) ={0}".format(len(longest_chain)))
+  finder_longest_chain =FinderLongestChain("ab", "bc", "bd", "ca", "de", "ef")
+  finder_longest_chain.print_matrix()
+  longest_chain =finder_longest_chain.compute_longest_chain_globally()
+  print("len(longest_chain) ={0}".format(len(longest_chain)+1))
