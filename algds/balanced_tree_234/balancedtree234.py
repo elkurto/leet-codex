@@ -12,8 +12,13 @@ class Node234:
       self.keys.append(key)
       self.data.append(data)
 
-class BalancedTree234:
+  def is_valid(self):
+    valid = [x for x in children # Extract valid child links
+             if isinstance(x, type(self))]
+    if len(valid) not in (0, 2): # Check number of children
+      raise ValueError("2-3-4 nodes must be created with 0,1,or 2 children")
 
+class BalancedTree234:
 
   def __init__(self):
     self.root =None
