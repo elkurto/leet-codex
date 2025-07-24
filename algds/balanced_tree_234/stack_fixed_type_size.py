@@ -12,9 +12,9 @@ class StackFixedTypeAndSize:
     if not isinstance(element, self.clazz):
       raise Exception('element is not an instance of '+ self.clazz)
 
-    self.population +=1
-    self.ary[self.population] =element
 
+    self.ary[self.population] =element
+    self.population +=1
 
   def __len__(self):
     return self.population
@@ -24,3 +24,20 @@ class StackFixedTypeAndSize:
 
   def __index__(self, idx):
     return self.ary[idx]
+
+  def __getitem__(self, idx):
+    return self.__index__(idx)
+
+  def __setitme__(self, idx, new_item):
+    old_item =None
+    if 0 <= idx < self.population:
+      old_item =self.ary[idx] =new_item
+    return old_item
+
+  def pop(self, idx):
+    item =None
+    if 0 <= idx < self.population:
+      item =self.ary.pop(idx)
+      self.population -=1
+    return item
+

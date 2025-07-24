@@ -9,7 +9,13 @@ class TestStackFixedTypeAndSize(unittest.TestCase):
     s =StackFixedTypeAndSize(int, 5)
     s.append( 3 )
     s.append( 4 )
-    self.assertEquals( len(s), 2)
+    self.assertEqual( len(s), 2)
+
+  def test_index(self):
+    s =StackFixedTypeAndSize(int, 5)
+    s.append(3)
+    s.append(4)
+    self.assertEqual( s[0] , 3)
 
 if __name__ == "__main__":
   unittest.main()
