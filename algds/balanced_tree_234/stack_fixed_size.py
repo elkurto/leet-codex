@@ -11,12 +11,12 @@ class StackFixedSize:
     return self.__population
 
   def append(self, element):
-    if self.__population >= self.maxlen:
+    if self.__population >= self.__maxlen:
       raise Exception(f"Exception fixed-sized-stack is full :: __population={self.__population} :: maxlen=({self.__maxlen})")
 
     self.__ary[self.__population] =element
     self.__population +=1
-    
+
   def push(self, element):
     return self.append(element)
 
