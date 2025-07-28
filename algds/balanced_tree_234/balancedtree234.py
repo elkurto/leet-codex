@@ -65,10 +65,10 @@ class Node234:
       else:
         i +=1
 
-    # return 0, if target <= keys[0]
-    # return 1, if keys[0] < target <= keys[1]
-    # return 2, if keys[1] < target <= keys[2]
-    # return 3, if keys[2] < target
+    # return 0  if target <= keys[0]
+    # return 1  if keys[0] < target <= keys[1]
+    # return 2  if keys[1] < target <= keys[2]
+    # return 3  if keys[2] < target
     return i, relation
 
 
@@ -156,21 +156,46 @@ class BalancedTree234:
       curr =None
     return curr
 
-  def __find_location_and_insert(self, target_key, data, curr, parent=None):
-    # a. descend to find a leaf node (or node with exact key) for insertion
-    # b. split full nodes encountered during descent.
-    index,relation =curr.find_min_index_where_target_le_keys_elem(target_key)
-    if relation == Rel.EQUAL:
-      curr.data[index] =data
-      return curr,relation
-    if curr.is_full():
-      self.__split_node(target_key, curr, parent)
-
-    return curr,relation
-
-  def __split_node(self, target_key, node, parent_node ):
   def insert(self, key, data):
-    pass
+    self.__find_location_and_insert(key, data, self.root, self)
+
+  def __find_location_and_insert(self, target_key, data, curr, parent):
+    # a. split full nodes encountered during descent.
+    # b. descend to find a leaf node (or node with exact key) for insertion
+
+
+
+    # split full node before descent and before insert
+    if curr.is_full():
+      curr, parent =self.__split_node( curr, parent, target_key)
+      # continue search at newNode
+
+    index,relation =curr.find_min_index_where_target_le_keys_elem(target_key)
+    if relation == Rel.EQUAL:  # case: exact match
+      curr.data[index] =data   #  replace data at key
+      return curr,parent     #  stop
+
+
+
+    return curr,parent
+
+  def __split_node(self, node_to_split, parent_node, target_key ):
+
+    if node_to_split.is_leaf()
+      new_node =Node234( node_to_split.keys[2], node_to_split.data[2])
+    else:
+      nChild =len(node_to_split.children)
+      new_node =Node234( node_to_split.keys[2], node_to_split.data[2], node_to_split.children[2:nChild])
+      node_to_split.key.pop()
+      node_to_split.data.pop()
+      node_to_split.children.pop()
+
+    if not node_to_split.is_leaf():
+      # then move the children from node_to_split.children[2:3] to new_node[0:1]
+      new_node.children[0] =node_to_split.children[2]
+      new_node.children[1] =node_to_split.children[3]
+
+
 
   def remove(self, key):
     pass
