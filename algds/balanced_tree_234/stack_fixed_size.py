@@ -59,4 +59,27 @@ class StackFixedSize:
 
     return item
 
+  def is_full(self):
+    return self.__population >= self.__maxlen
+
+  def insert_at(self, idx, val):
+    if idx >= self.__maxlen:
+      raise IndexError( f"IndexError: idx({idx} >= maxlen({self.__maxlen}) :: idx must be less than maxlen")
+    if idx < 0:
+      raise IndexError( f"IndexError: idx({idx}) < 0")
+
+    # 0 <= idx < self.__maxlen
+    if 0 <= idx < self.__population:
+      for i in reversed(range(idx,self.__maxlen-1)):
+        # shift elements to the right
+        # possibly overwriting last element
+        self.__ary[i+1] =self.__ary[i]
+      #end-for
+      self.__ary[idx] =val
+      self.__population =min( self.__maxlen, self.__population+1)
+    elif idx >= self.__population:
+      # then just push
+        self.push(val)
+
+
 

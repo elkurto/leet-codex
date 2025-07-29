@@ -146,9 +146,9 @@ class Node234:
     return new_right_node
 
   def receive_middle_from_child(self, key, data):
-    self.keys.insert_at(1, keys)
+    self.keys.insert_at(1, key)
     self.data.insert_at(1, data)
-    
+
 
 
 
@@ -217,6 +217,7 @@ class BalancedTree234:
     else:
       # In parent_node exists, shift  keys[2],data[2],children[2]
       #   to right regardless if keys[2] is None.
+      #
       parent_node.receive_middle_from_child( *node_to_split.pop_key_data() )
 
 

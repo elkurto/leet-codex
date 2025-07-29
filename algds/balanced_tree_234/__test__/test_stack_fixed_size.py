@@ -50,6 +50,38 @@ class TestStackFixedSize(unittest.TestCase):
     self.assertEqual( s.pop(), 1)
     self.assertEqual( s.pop(), 0)
 
+  def test_insert_at(self):
+    s =StackFixedSize( 4)
+
+    s.insert_at(1, 'a')
+    self.assertEqual('a', s[0])
+
+    s.insert_at(3, 'c')
+    self.assertEqual('a', s[0])
+    self.assertEqual('c', s[1])
+
+    s.insert_at(1, 'b')
+    self.assertEqual('a', s[0])
+    self.assertEqual('b', s[1])
+    self.assertEqual('c', s[2])
+
+    s.insert_at( 0, 'z')
+    self.assertEqual('z', s[0])
+    self.assertEqual('a', s[1])
+    self.assertEqual('b', s[2])
+    self.assertEqual('c', s[3])
+
+    s.insert_at( 1, 'x')
+    self.assertEqual('z', s[0])
+    self.assertEqual('x', s[1])
+    self.assertEqual('a', s[2])
+    self.assertEqual('b', s[3])
+
+    s.insert_at( 1, 'y')
+    self.assertEqual('z', s[0])
+    self.assertEqual('y', s[1])
+    self.assertEqual('x', s[2])
+    self.assertEqual('a', s[3])
 
 
 
