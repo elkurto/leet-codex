@@ -7,16 +7,22 @@ class TestStackFixedSize(unittest.TestCase):
 
   def test_append(self):
     s =StackFixedSize( 5)
-    s.append( 3 )
-    s.append( 4 )
+    s.append( 0 )
+    s.append( 1 )
     self.assertEqual( len(s), 2)
 
+    s.append( 2)
+    s.append( 3)
+    s.append( 4)
+    self.assertRaises(IndexError, s.append, 5)
+
+
   def test_index(self):
-    s =StackFixedSize( 5)
-    s.append(3)
-    s.append(4)
-    self.assertEqual( s[0] , 3)
-    self.assertEqual( s[1] , 4)
+      s =StackFixedSize( 5)
+      s.append(3)
+      s.append(4)
+      self.assertEqual( s[0] , 3)
+      self.assertEqual( s[1] , 4)
 
   def test_set_index(self):
     s =StackFixedSize( 5)

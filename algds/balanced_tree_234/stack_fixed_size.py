@@ -12,7 +12,7 @@ class StackFixedSize:
 
   def append(self, element):
     if self.__population >= self.__maxlen:
-      raise Exception(f"Exception fixed-sized-stack is full :: __population={self.__population} :: maxlen=({self.__maxlen})")
+      raise IndexError(f"Exception fixed-sized-stack is full :: __population={self.__population} :: maxlen=({self.__maxlen})")
 
     self.__ary[self.__population] =element
     self.__population +=1

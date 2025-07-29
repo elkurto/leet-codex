@@ -1,6 +1,7 @@
 from functools import reduce
 from enum import Enum
-from stack_fixed_type_size import StackFixedTypeAndSize
+from stack_fixed_size import StackFixedSize
+
 """
 Invariant: Each tree level is always balanced 
    Balance mean that each branch at same level has *equal height*.
@@ -23,19 +24,23 @@ class Rel(Enum):
 class Node234:
 
   def __init__(self, key=None, data=None, *children):
-    self.keys =[]  # any # non-None
-    self.data =[]   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
-    self.children =children  # must be type = Node234
+    self.keys =StackFixedSize(MAXKEY)  # any # non-None
+    self.data =StackFixedSize(MAXKEY)   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
+    self.children =StackFixedSize(MAXKEY+1)  # must be type = Node234
 
     if key is not None:
       self.keys.append(key)
       self.data.append(data)
 
+    for child in children:
+      self.children.append(child)
+
   def is_valid(self):
     are_all_children_correct_type =reduce( lambda x,y : x and isinstance(y, type(self)), self.children, True)
-
+    if not are_all_children_correct_type:
+      raise TypeError("all children must be type Node234")
     if len(self.children) >= MAXKEY: # Check number of children
-      raise ValueError("2-3-4 nodes must be created with 0 or 2 children")
+      raise ValueError("2-3-4 nodes must be contain with 0,1,2,3 children")
 
   def is_leaf(self):
     return len(self.children) == 0
@@ -124,6 +129,28 @@ class Node234:
   def __str__(self):
     return f"<Node234_({'_'.join([str(k) for k in self.keys])})"
 
+  def pop_key_data(self):
+    key =self.keys.pop()
+    data =self.data.pop()
+    return key,data
+
+
+
+  def split_full_node(self):
+    if not self.is_full():
+      raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={len(node_to_split.keys)}")
+    new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:3])
+    self.children.pop() # remove self.children[3]
+    self.children.pop() # remove self.children[2]
+
+    return new_right_node
+
+  def receive_middle_from_child(self, key, data):
+    self.keys.insert_at(1, keys)
+    self.data.insert_at(1, data)
+    
+
+
 
 class BalancedTree234:
 
@@ -181,9 +208,22 @@ class BalancedTree234:
 
   def __split_node(self, node_to_split, parent_node, target_key ):
 
-    if node_to_split.is_leaf()
-      new_node =Node234( node_to_split.keys[2], node_to_split.data[2])
+    new_node =node_to_split.split_full_node()
+
+    if parent_node is self:
+      # then splitting root node, so create a new root/parent , and attach *children
+      self.root =Node234( node_to_split.keys.pop(), node_to_split.data.pop(), node_to_split, new_node)
+
     else:
+      # In parent_node exists, shift  keys[2],data[2],children[2]
+      #   to right regardless if keys[2] is None.
+      parent_node.receive_middle_from_child( *node_to_split.pop_key_data() )
+
+
+
+
+    if not node_to_split.is_leaf():
+
       nChild =len(node_to_split.children)
       new_node =Node234( node_to_split.keys[2], node_to_split.data[2], node_to_split.children[2:nChild])
       node_to_split.key.pop()
