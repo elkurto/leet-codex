@@ -55,34 +55,40 @@ class TestStackFixedSize(unittest.TestCase):
 
     s.insert_at(1, 'a')
     self.assertEqual('a', s[0])
+    self.assertEqual( 1, len(s))
 
     s.insert_at(3, 'c')
     self.assertEqual('a', s[0])
     self.assertEqual('c', s[1])
+    self.assertEqual( 2, len(s))
 
     s.insert_at(1, 'b')
     self.assertEqual('a', s[0])
     self.assertEqual('b', s[1])
     self.assertEqual('c', s[2])
+    self.assertEqual( 3, len(s))
+
 
     s.insert_at( 0, 'z')
     self.assertEqual('z', s[0])
     self.assertEqual('a', s[1])
     self.assertEqual('b', s[2])
     self.assertEqual('c', s[3])
+    self.assertEqual( 4, len(s))
 
     s.insert_at( 1, 'x')
     self.assertEqual('z', s[0])
     self.assertEqual('x', s[1])
     self.assertEqual('a', s[2])
     self.assertEqual('b', s[3])
+    self.assertEqual( 4, len(s))
 
     s.insert_at( 1, 'y')
     self.assertEqual('z', s[0])
     self.assertEqual('y', s[1])
     self.assertEqual('x', s[2])
     self.assertEqual('a', s[3])
-
+    self.assertEqual( 4, len(s))
 
 
 if __name__ == "__main__":
