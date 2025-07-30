@@ -15,6 +15,21 @@ class MyTestCase(unittest.TestCase):
     self.assertEqual(2, node.nchild())
     self.assertTrue( node.is_valid_or_raise() )
 
+  def test_insert_key_value(self):
+    # todo
+
+  def test_is_full_and_is_not_full(self):
+    # todo
+
+  def test_pop_key_data(self):
+    # todo
+
+  def test_split_full_node(self):
+    # todo
+
+  def receive_middle_from_child(self, key, data):
+    # todo
+
 
 
 
