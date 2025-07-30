@@ -88,14 +88,14 @@ class Node234:
   def is_not_full(self):
     return len(self.keys) < MAXKEY
 
-  def insert_key_value(self, new_key, new_data, new_subtree):
+  def insert_key_value(self, new_key, new_data, new_subtree=None):
     if self.keys.is_full():
       raise Exception(f"cannot insert key={new_key} into full node {str(self)}")
 
     # 1. find insertion index, i
     #   so find min(i) in {0,1,..MAXKEY} where ( newKey <= key[i] or key[i] is None)
     i =0
-    while i < MAXKEY and i < len(self.keys) and new_key < self.keys[i]:
+    while i < MAXKEY and i < len(self.keys) and new_key >= self.keys[i]:
       i +=1
 
     if new_key == self.keys[i]:
@@ -108,19 +108,19 @@ class Node234:
     else:
       self.keys.insert_at(i, new_key)
       self.data.insert_at(i, new_data)
-      self.children.insert_at(i+1, new_subtree)
+      if new_subtree is not None:
+        self.children.insert_at(i+1, new_subtree)
+
 
       return True # return True to indicate a new key added
 
   def __str__(self):
     return f"<Node234_({'_'.join([str(k) for k in self.keys])})"
 
-  def pop_key_data(self):
-    key =self.keys.pop()
-    data =self.data.pop()
+  def pop_key_data(self, idx=None):
+    key =self.keys.pop(idx)
+    data =self.data.pop(idx)
     return key,data
-
-
 
   def split_full_node(self):
     if not self.is_full():
@@ -131,9 +131,20 @@ class Node234:
 
     return new_right_node
 
-  def receive_middle_from_child(self, key, data):
+
+  def receive_left_key_from_child(self, key, data):
+    self.keys.insert_at(0, key)
+    self.data.insert_at(0, data)
+
+  def receive_middle_key_from_child(self, key, data):
     self.keys.insert_at(1, key)
     self.data.insert_at(1, data)
+
+  def receive_right_key_from_child(self, key, data):
+    self.keys.insert_at(2, key)
+    self.data.insert_at(2, data)
+
+
 
   def nkey(self):
     return len(self.keys)

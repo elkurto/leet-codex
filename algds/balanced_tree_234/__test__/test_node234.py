@@ -16,20 +16,36 @@ class MyTestCase(unittest.TestCase):
     self.assertTrue( node.is_valid_or_raise() )
 
   def test_insert_key_value(self):
-    # todo
+    node =Node234('m', 'mmmm', Node234('b', 'bbbb'), Node234('r', 'rrrr'))
+    node.insert_key_value( 'k', 'kkkk')
+    self.assertListEqual( ['k','m',None], node.keys[0:3])
+
+    node.insert_key_value( 'r', 'rrrr')
+    self.assertListEqual( ['k','m','r'], node.keys[0:3])
+
+    self.assertRaises( Exception, node.insert_key_value, 'd', 'dddd')
+
+
+
+    #node.insert_key_value( 'd', 'dddd')
+    #self.assertListEqual( ['d','k','m'], node.keys[0:3])
+
 
   def test_is_full_and_is_not_full(self):
     # todo
+    pass
 
   def test_pop_key_data(self):
     # todo
+    pass
 
   def test_split_full_node(self):
     # todo
+    pass
 
   def receive_middle_from_child(self, key, data):
     # todo
-
+    pass
 
 
 
