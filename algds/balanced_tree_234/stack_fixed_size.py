@@ -60,7 +60,7 @@ class StackFixedSize:
     return item
 
   def is_full(self):
-    return self.__population >= self.__maxlen
+    return self.__maxlen <= self.__population
 
   def insert_at(self, idx, val):
     if idx >= self.__maxlen:
@@ -77,9 +77,9 @@ class StackFixedSize:
       #end-for
       self.__ary[idx] =val
       self.__population =min( self.__maxlen, self.__population+1)
-    elif idx >= self.__population:
-      # then just push
-        self.push(val)
+    elif self.__population <= idx:
+      # then just push onto end
+      self.push(val)
 
 
 
