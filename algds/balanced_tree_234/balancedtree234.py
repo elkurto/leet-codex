@@ -1,6 +1,6 @@
 from functools import reduce
 from enum import Enum
-from stack_fixed_size import StackFixedSize
+from balanced_tree_234 import stack_fixed_size
 
 """
 Invariant: Each tree level is always balanced 
@@ -24,9 +24,9 @@ class Rel(Enum):
 class Node234:
 
   def __init__(self, key=None, data=None, *children):
-    self.keys =StackFixedSize(MAXKEY)  # any # non-None
-    self.data =StackFixedSize(MAXKEY)   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
-    self.children =StackFixedSize(MAXKEY+1)  # must be type = Node234
+    self.keys =stack_fixed_size.StackFixedSize(MAXKEY)  # any # non-None
+    self.data =stack_fixed_size.StackFixedSize(MAXKEY)   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
+    self.children =stack_fixed_size.StackFixedSize(MAXKEY+1)  # elements must be type, Node234
 
     if key is not None:
       self.keys.append(key)
@@ -35,12 +35,14 @@ class Node234:
     for child in children:
       self.children.append(child)
 
-  def is_valid(self):
-    are_all_children_correct_type =reduce( lambda x,y : x and isinstance(y, type(self)), self.children, True)
+  def is_valid_or_raise(self):
+    are_all_children_correct_type =reduce( lambda x,y : x and isinstance(y, type(self)), self.children[0:self.nchild()], True)
     if not are_all_children_correct_type:
       raise TypeError("all children must be type Node234")
     if len(self.children) >= MAXKEY: # Check number of children
       raise ValueError("2-3-4 nodes must be contain with 0,1,2,3 children")
+
+    return True
 
   def is_leaf(self):
     return len(self.children) == 0
@@ -87,14 +89,14 @@ class Node234:
     return len(self.keys) < MAXKEY
 
   def insert_key_value(self, new_key, new_data, new_subtree):
-    # 1. find insertion index, i
-    #   so find min(i) in (0,1,2) where ( newKey <= key[i] or key[i] is None)
-    i =0
-    while i < MAXKEY and new_key <= self.keys[i] :
-      i +=1
-
-    if i >= MAXKEY:
+    if self.keys.is_full():
       raise Exception(f"cannot insert key={new_key} into full node {str(self)}")
+
+    # 1. find insertion index, i
+    #   so find min(i) in {0,1,..MAXKEY} where ( newKey <= key[i] or key[i] is None)
+    i =0
+    while i < MAXKEY and i < len(self.keys) and new_key < self.keys[i]:
+      i +=1
 
     if new_key == self.keys[i]:
       # 2. case: equal keys
@@ -102,29 +104,13 @@ class Node234:
       #    and ignore the subtree argument
       #    and return False (no new key)
       self.data[i] =new_data
-      return False
+      return False # False indicates no new key added
     else:
-      j =len(self.keys)
-      if j >= MAXKEY:
-        raise Exception(f"cannot insert key={new_key} into full node {str(self)}")
+      self.keys.insert_at(i, new_key)
+      self.data.insert_at(i, new_data)
+      self.children.insert_at(i+1, new_subtree)
 
-      # 2.1. case: insert fresh newKey, newData, and newSubtree
-      #   ,then make a hole at index, i,  by shifting all to right
-      #   ,then assign newKey, newData, and newSubtree at index,i
-      while i < j:
-        self.keys[j] =self.keys[j-1]
-        self.data[j] =self.data[j-1]
-        self.children =self.children[j-1]
-        j -=1
-      #end-while
-
-      self.keys[i] =new_key
-      self.data[i] =new_data
-      if new_subtree:
-        self.children[i] =new_subtree
-      else:
-        self.children[i] =None
-      return True
+      return True # return True to indicate a new key added
 
   def __str__(self):
     return f"<Node234_({'_'.join([str(k) for k in self.keys])})"
@@ -138,7 +124,7 @@ class Node234:
 
   def split_full_node(self):
     if not self.is_full():
-      raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={len(node_to_split.keys)}")
+      raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={self.nkey()}")
     new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:3])
     self.children.pop() # remove self.children[3]
     self.children.pop() # remove self.children[2]
@@ -149,7 +135,14 @@ class Node234:
     self.keys.insert_at(1, key)
     self.data.insert_at(1, data)
 
+  def nkey(self):
+    return len(self.keys)
 
+  def ndata(self):
+    return len(self.data)
+
+  def nchild(self):
+    return len(self.children)
 
 
 class BalancedTree234:
@@ -236,7 +229,7 @@ class BalancedTree234:
       new_node.children[0] =node_to_split.children[2]
       new_node.children[1] =node_to_split.children[3]
 
-
+    return node_to_split,parent_node
 
   def remove(self, key):
     pass
