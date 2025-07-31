@@ -140,6 +140,10 @@ class Node234:
     return key,data
 
   def split_full_node(self):
+    """
+
+    :return: Node234 : new_right_node with keys[2],data[2],children[2:3]
+    """
     if not self.is_full():
       raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={self.nkey()}")
     new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:3])
@@ -149,21 +153,6 @@ class Node234:
       self.children.pop() # remove self.children[2]
 
     return new_right_node
-
-
-  def receive_left_key_from_child(self, key, data):
-    self.keys.insert_at(0, key)
-    self.data.insert_at(0, data)
-
-  def receive_middle_key_from_child(self, key, data):
-    self.keys.insert_at(1, key)
-    self.data.insert_at(1, data)
-
-  def receive_right_key_from_child(self, key, data):
-    self.keys.insert_at(2, key)
-    self.data.insert_at(2, data)
-
-
 
   def nkey(self):
     return len(self.keys)

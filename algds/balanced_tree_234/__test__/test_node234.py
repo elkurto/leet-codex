@@ -58,12 +58,26 @@ class MyTestCase(unittest.TestCase):
     node_left.insert_key_value('m', 'mmmm')
     node_left.insert_key_value('r', 'rrrr')
 
+    self.assertListEqual(['m','o','r'], node_left.keys[0:3])
+
+    # 1. make a right node w/ key[0] ='r'
     node_right =node_left.split_full_node()
     self.assertEqual( 'r', node_right.keys[0])
 
-  def receive_middle_from_child(self, key, data):
-    # todo
-    pass
+    # 2. make a empty root node w/ key[0] ='o'
+    key_o, data_o =node_left.pop_key_data(1)
+
+    # 3. attach so that new_root.children[0] =node_left
+    #              and  new_root.children[1] =node_right
+    new_root =Node234( key_o, data_o, node_left, node_right)
+
+    self.assertEqual( 'o', new_root.keys[0])
+    self.assertEqual( 'oooo', new_root.data[0])
+    self.assertEqual( 1, len(new_root.keys))
+
+    self.assertIs( node_left, new_root.children[0])
+    self.assertIs( node_right, new_root.children[1])
+
 
 
 
