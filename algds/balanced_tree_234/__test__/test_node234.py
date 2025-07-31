@@ -27,21 +27,39 @@ class MyTestCase(unittest.TestCase):
 
 
 
-    #node.insert_key_value( 'd', 'dddd')
-    #self.assertListEqual( ['d','k','m'], node.keys[0:3])
-
-
   def test_is_full_and_is_not_full(self):
-    # todo
-    pass
+    node =Node234( 'm', 'mmmm')
+    self.assertFalse( node.is_full() )
+    self.assertTrue( node.is_not_full() )
+
+    node.insert_key_value('k', 'kkkk')
+    self.assertFalse( node.is_full() )
+    self.assertTrue( node.is_not_full() )
+
+    node.insert_key_value('i', 'iiii')
+    self.assertTrue( node.is_full() )
+    self.assertFalse( node.is_not_full() )
+
+    self.assertListEqual(['i','k','m'], node.keys[0:3])
 
   def test_pop_key_data(self):
-    # todo
-    pass
+    node =Node234( 'm', 'mmmm')
+    node.insert_key_value('k', 'kkkk')
+    node.insert_key_value('i', 'iiii')
+
+    key,data =node.pop_key_data(idx=1)
+    self.assertEqual( 'k', key)
+    self.assertEqual( 'kkkk', data)
+
+    self.assertListEqual(['i','m',None], node.keys[0:3])
 
   def test_split_full_node(self):
-    # todo
-    pass
+    node_left =Node234( 'o', 'oooo', )
+    node_left.insert_key_value('m', 'mmmm')
+    node_left.insert_key_value('r', 'rrrr')
+
+    node_right =node_left.split_full_node()
+    self.assertEqual( 'r', node_right.keys[0])
 
   def receive_middle_from_child(self, key, data):
     # todo

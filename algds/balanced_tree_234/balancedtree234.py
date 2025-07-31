@@ -88,7 +88,14 @@ class Node234:
   def is_not_full(self):
     return len(self.keys) < MAXKEY
 
-  def insert_key_value(self, new_key, new_data, new_subtree=None):
+  def insert_key_value(self, new_key, new_data, *new_children):
+    """
+     case: new_key not in self.keys
+      1. before: keys=[ a , c]
+      2. call node.insert_key_value( 'b', 'bbbb')
+      3. after: keys=[ a, b, c]
+
+    """
     if self.keys.is_full():
       raise Exception(f"cannot insert key={new_key} into full node {str(self)}")
 
@@ -98,21 +105,31 @@ class Node234:
     while i < MAXKEY and i < len(self.keys) and new_key >= self.keys[i]:
       i +=1
 
+    b_new_key =False
     if new_key == self.keys[i]:
       # 2. case: equal keys
       #    ,then replace data
       #    and ignore the subtree argument
       #    and return False (no new key)
       self.data[i] =new_data
-      return False # False indicates no new key added
+      b_new_key = False # False indicates no new key added
     else:
       self.keys.insert_at(i, new_key)
       self.data.insert_at(i, new_data)
-      if new_subtree is not None:
-        self.children.insert_at(i+1, new_subtree)
+      b_new_key = True # return True to indicate a new key added
 
+    # deal with *children
+    # assume that there's no existing children
+    # assume that not exists x such that child.keys[x] == new_key
+    for child in new_children:
+      if child.keys[i] < self.keys[i]:
+        self.children.insert_at(i, child)
+      elif child.keys[i] > self.keys[i]:
+        self.children.insert_at(i+1, child)
+      else:
+        raise Exception( 'Exception: refusing to insert child.key == parent.key')
 
-      return True # return True to indicate a new key added
+    return b_new_key
 
   def __str__(self):
     return f"<Node234_({'_'.join([str(k) for k in self.keys])})"
@@ -126,8 +143,10 @@ class Node234:
     if not self.is_full():
       raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={self.nkey()}")
     new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:3])
-    self.children.pop() # remove self.children[3]
-    self.children.pop() # remove self.children[2]
+    if len(self.children) >= 3:
+      self.children.pop() # remove self.children[3]
+    if len(self.children) >= 2:
+      self.children.pop() # remove self.children[2]
 
     return new_right_node
 

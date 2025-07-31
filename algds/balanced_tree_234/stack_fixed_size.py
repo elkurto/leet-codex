@@ -49,12 +49,25 @@ class StackFixedSize:
     return old_item
 
   def pop(self, idx=None):
+
+
     item =None
     if idx is None:
       idx =self.__population -1  # compute last index
 
+    if self.__population <= 0 :
+      raise IndexError( "IndexError cannot pop from empty stack")
+    elif idx < 0 or self.__population < idx:
+      raise IndexError( f"IndexError no index={idx} ::: idx must be in [0,{self.__population-1}")
+
+
     if 0 <= idx < self.__population: # remove item at last index
-      item =self.__ary.pop(idx)
+      #item =self.__ary.pop(idx)
+      item =self.__ary[idx]
+
+      for i in range(idx,self.__population-1):
+        self.__ary[i] =self.__ary[i+1]
+      self.__ary[self.__population-1] =None
       self.__population -=1
 
     return item
