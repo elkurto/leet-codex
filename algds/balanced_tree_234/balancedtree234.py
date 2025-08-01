@@ -34,7 +34,10 @@ class Node234:
       self.data.append(data)
 
     for child in children:
-      self.children.append(child)
+      if isinstance(child, Node234):
+        self.children.append(child)
+      else:
+        break # ignore child children if child is None or wrong type
 
   def is_valid_or_raise(self):
     are_all_children_correct_type =reduce( lambda x,y : x and isinstance(y, type(self)), self.children[0:self.nchild()], True)
@@ -196,7 +199,11 @@ class BalancedTree234:
     return curr
 
   def insert(self, key, data):
-    self.__find_location_and_insert(key, data, self.root, self)
+    if self.root is None:
+      self.root =Node234(key, data)
+      self.population +=1
+    else:
+      self.__find_location_and_insert(key, data, self.root, self)
 
   def __find_location_and_insert(self, target_key, data, curr, parent):
     if curr is None:
@@ -208,7 +215,7 @@ class BalancedTree234:
     # split full node before descent and before insert
     if curr.is_full():
       curr, parent =self.__split_node( curr, parent, target_key)
-      # continue search at newNode
+      # continue search at curr (which is orig curr or right sibling
 
     index,relation =curr.find_min_index_where_target_le_keys_elem(target_key)
     if relation == Rel.EQ:  # case: exact match
@@ -218,6 +225,7 @@ class BalancedTree234:
       # if curr is a leaf, then insert
       if curr.is_leaf():
         curr.insert_key_value( target_key, data)
+        self.population +=1
         return curr,parent  # stop
       else:
         # else keep searching recursively
