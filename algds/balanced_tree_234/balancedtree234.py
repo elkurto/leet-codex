@@ -176,9 +176,6 @@ class BalancedTree234:
   def is_empty(self):
     return self.root is None
 
-  def __find(self, goal_key, current_node, parent_node, b_split_full_nodes=True):
-    pass
-
   def find(self, target):
     return self.find_node_with_key(target)
 
