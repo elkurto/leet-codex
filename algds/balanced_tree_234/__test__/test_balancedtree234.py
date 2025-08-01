@@ -96,16 +96,21 @@ class TestBalancedTree234(unittest.TestCase):
     for char in chars:
       b.insert(char, char*3)
 
+    b.insert('u', 'u'*3)
     # validate
-    self.assertListEqual(['e',None,None], b.root.keys[0:3])
-    self.assertEqual( 2, b.root.nchild())
+    self.assertListEqual(['e','s',None], b.root.keys[0:3])
+    self.assertEqual( 3, b.root.nchild())
     c0 =b.root.children[0]
     c1 =b.root.children[1]
+    c2 =b.root.children[2]
+
     self.assertIsInstance(c0, Node234)
     self.assertIsInstance(c1, Node234)
+    self.assertIsInstance(c2, Node234)
 
     self.assertListEqual( ['a',None,None], c0.keys[0:3])
-    self.assertListEqual( ['r','s','t'],  c1.keys[0:3])
+    self.assertListEqual( ['r',None,None],  c1.keys[0:3])
+    self.assertListEqual( ['t','u',None],  c2.keys[0:3])
 
   def test_insert_searchxmpl(self):
     chars ="searchxmpl"
@@ -115,15 +120,21 @@ class TestBalancedTree234(unittest.TestCase):
       b.insert(char, char*3)
 
     # validate
-    self.assertListEqual(['m',None,None], b.root.keys[0:3])
-    self.assertEqual( 2, b.root.nchild())
+    self.assertListEqual(['e','m','r'], b.root.keys[0:3])
+    self.assertEqual( 4, b.root.nchild())
     c0 =b.root.children[0]
     c1 =b.root.children[1]
+    c2 =b.root.children[2]
+    c3 =b.root.children[3]
     self.assertIsInstance(c0, Node234)
     self.assertIsInstance(c1, Node234)
+    self.assertIsInstance(c2, Node234)
+    self.assertIsInstance(c3, Node234)
 
-    self.assertListEqual( ['e',None,None], c0.keys[0:3])
-    self.assertListEqual( ['r',None,None], c1.keys[0:3])
+    self.assertListEqual( ['a','c',None], c0.keys[0:3])
+    self.assertListEqual( ['h','l',None], c1.keys[0:3])
+    self.assertListEqual( ['p',None,None], c2.keys[0:3])
+    self.assertListEqual( ['s','x',None], c3.keys[0:3])
 
 
 if __name__ == '__main__':

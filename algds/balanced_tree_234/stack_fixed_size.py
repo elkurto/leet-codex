@@ -94,5 +94,7 @@ class StackFixedSize:
       # then just push onto end
       self.push(val)
 
+  def __str__(self):
+    return ','.join( x if x is not None else 'None'  for x in self.__ary)
 
 

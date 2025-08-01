@@ -1,5 +1,5 @@
 import unittest
-from ..stack_fixed_type_size import StackFixedTypeAndSize
+from balanced_tree_234 import StackFixedTypeAndSize
 
 class TestStackFixedTypeAndSize(unittest.TestCase):
   def test_foo(self):

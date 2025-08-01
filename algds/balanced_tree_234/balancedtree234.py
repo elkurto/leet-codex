@@ -94,7 +94,7 @@ class Node234:
   def is_not_full(self):
     return len(self.keys) < MAX_KEY
 
-  def insert_key_value(self, new_key, new_data, *new_children):
+  def insert_key_value(self, new_key, new_data, new_child=None):
     """
      case: new_key not in self.keys
       1. before: keys=[ a , c]
@@ -108,7 +108,7 @@ class Node234:
     # 1. find insertion index, i
     #   so find min(i) in {0,1,..MAX_KEY} where ( newKey <= key[i] or key[i] is None)
     i =0
-    while i < MAX_KEY and i < len(self.keys) and new_key >= self.keys[i]:
+    while i < MAX_KEY and i < len(self.keys) and self.keys[i] < new_key :
       i +=1
 
 
@@ -127,13 +127,8 @@ class Node234:
     # deal with *children
     # assume that there's no existing children
     # assume that not exists x such that child.keys[x] == new_key
-    for child in new_children:
-      if child.keys[i] < self.keys[i]:
-        self.children.insert_at(i, child)
-      elif child.keys[i] > self.keys[i]:
-        self.children.insert_at(i+1, child)
-      else:
-        raise Exception( 'Exception: refusing to insert child.key == parent.key')
+    if new_child:
+      self.children.insert_at(i+1, new_child)
 
     return b_new_key
 
@@ -229,7 +224,7 @@ class BalancedTree234:
         return curr,parent  # stop
       else:
         # else keep searching recursively
-        curr,parent =self.__find_location_and_insert(target_key, data, curr.children[index], parent)
+        curr,parent =self.__find_location_and_insert(target_key, data, curr.children[index], curr)
         return curr,parent
 
   def __split_node(self, node_to_split, parent_node, target_key ):
