@@ -53,7 +53,77 @@ class TestBalancedTree234(unittest.TestCase):
     child01 =b.root.children[1]
     self.assertEqual( [100,150,None], child01.keys[0:3])
 
+  def test_insert_sear(self):
+    chars ="sear"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
 
+    # validate
+    self.assertListEqual(['e',None,None], b.root.keys[0:3])
+    self.assertEqual( 2, b.root.nchild())
+    c0 =b.root.children[0]
+    c1 =b.root.children[1]
+    self.assertIsInstance(c0, Node234)
+    self.assertIsInstance(c1, Node234)
+
+    self.assertListEqual( ['a',None,None], c0.keys[0:3])
+    self.assertListEqual( ['r','s',None],  c1.keys[0:3])
+
+  def test_insert_seart(self):
+    chars ="seart"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    # validate
+    self.assertListEqual(['e',None,None], b.root.keys[0:3])
+    self.assertEqual( 2, b.root.nchild())
+    c0 =b.root.children[0]
+    c1 =b.root.children[1]
+    self.assertIsInstance(c0, Node234)
+    self.assertIsInstance(c1, Node234)
+
+    self.assertListEqual( ['a',None,None], c0.keys[0:3])
+    self.assertListEqual( ['r','s','t'],  c1.keys[0:3])
+
+  def test_insert_seartu(self):
+    chars ="seart"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    # validate
+    self.assertListEqual(['e',None,None], b.root.keys[0:3])
+    self.assertEqual( 2, b.root.nchild())
+    c0 =b.root.children[0]
+    c1 =b.root.children[1]
+    self.assertIsInstance(c0, Node234)
+    self.assertIsInstance(c1, Node234)
+
+    self.assertListEqual( ['a',None,None], c0.keys[0:3])
+    self.assertListEqual( ['r','s','t'],  c1.keys[0:3])
+
+  def test_insert_searchxmpl(self):
+    chars ="searchxmpl"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    # validate
+    self.assertListEqual(['m',None,None], b.root.keys[0:3])
+    self.assertEqual( 2, b.root.nchild())
+    c0 =b.root.children[0]
+    c1 =b.root.children[1]
+    self.assertIsInstance(c0, Node234)
+    self.assertIsInstance(c1, Node234)
+
+    self.assertListEqual( ['e',None,None], c0.keys[0:3])
+    self.assertListEqual( ['r',None,None], c1.keys[0:3])
 
 
 if __name__ == '__main__':
