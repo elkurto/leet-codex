@@ -1,7 +1,7 @@
 import unittest
 from balanced_tree_234 import Node234
 
-class MyTestCase(unittest.TestCase):
+class TestNode234(unittest.TestCase):
   def test_ctor(self):
     node =Node234()
     self.assertEqual(0, node.nkey())
