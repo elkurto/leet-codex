@@ -15,18 +15,19 @@ Invariant: only add to leaf nodes
 Invariant: no 4 nodes (3key) at root) -- 2node(1key) and 3node(2key) allowed at root
 
 """
-MAXKEY =3 # max keys per node
+MAX_KEY =3 # max keys per node
 
 class Rel(Enum):
-  NOT_EQUAL =0
-  EQUAL =1
+  LT =0
+  EQ =1
+  GT =2
 
 class Node234:
 
   def __init__(self, key=None, data=None, *children):
-    self.keys =stack_fixed_size.StackFixedSize(MAXKEY)  # any # non-None
-    self.data =stack_fixed_size.StackFixedSize(MAXKEY)   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
-    self.children =stack_fixed_size.StackFixedSize(MAXKEY+1)  # elements must be type, Node234
+    self.keys =stack_fixed_size.StackFixedSize(MAX_KEY)  # any # non-None
+    self.data =stack_fixed_size.StackFixedSize(MAX_KEY)   # any # possibly None -- # @todo handle multiple data at same key (ie make data a list)
+    self.children =stack_fixed_size.StackFixedSize(MAX_KEY + 1)  # elements must be type, Node234
 
     if key is not None:
       self.keys.append(key)
@@ -39,7 +40,7 @@ class Node234:
     are_all_children_correct_type =reduce( lambda x,y : x and isinstance(y, type(self)), self.children[0:self.nchild()], True)
     if not are_all_children_correct_type:
       raise TypeError("all children must be type Node234")
-    if len(self.children) >= MAXKEY: # Check number of children
+    if len(self.children) >= MAX_KEY: # Check number of children
       raise ValueError("2-3-4 nodes must be contain with 0,1,2,3 children")
 
     return True
@@ -64,14 +65,16 @@ class Node234:
     while i < len(self.keys):
       if target == self.keys[i]:
         # then found index
-        relation =Rel.EQUAL
+        relation =Rel.EQ
         break
       elif target < self.keys[i]:
-        relation =Rel.NOT_EQUAL
+        relation =Rel.LT
         break
       else:
         i +=1
 
+    if i >= len(self.keys):
+      relation =Rel.GT
     # return 0  if target <= keys[0]
     # return 1  if keys[0] < target <= keys[1]
     # return 2  if keys[1] < target <= keys[2]
@@ -83,10 +86,10 @@ class Node234:
     return len(self.keys) == 0
 
   def is_full(self):
-    return len(self.keys) >= MAXKEY
+    return len(self.keys) >= MAX_KEY
 
   def is_not_full(self):
-    return len(self.keys) < MAXKEY
+    return len(self.keys) < MAX_KEY
 
   def insert_key_value(self, new_key, new_data, *new_children):
     """
@@ -100,12 +103,12 @@ class Node234:
       raise Exception(f"cannot insert key={new_key} into full node {str(self)}")
 
     # 1. find insertion index, i
-    #   so find min(i) in {0,1,..MAXKEY} where ( newKey <= key[i] or key[i] is None)
+    #   so find min(i) in {0,1,..MAX_KEY} where ( newKey <= key[i] or key[i] is None)
     i =0
-    while i < MAXKEY and i < len(self.keys) and new_key >= self.keys[i]:
+    while i < MAX_KEY and i < len(self.keys) and new_key >= self.keys[i]:
       i +=1
 
-    b_new_key =False
+
     if new_key == self.keys[i]:
       # 2. case: equal keys
       #    ,then replace data
@@ -183,7 +186,7 @@ class BalancedTree234:
 
     curr =self.root if curr is None else curr
     index,relation =curr.find_min_index_where_target_le_keys_elem(target)
-    if relation == Rel.EQUAL:
+    if relation == Rel.EQ:
       return curr
     elif index < len(curr.children):
       # no exact match and children exist, then recurse through children
@@ -199,10 +202,11 @@ class BalancedTree234:
     self.__find_location_and_insert(key, data, self.root, self)
 
   def __find_location_and_insert(self, target_key, data, curr, parent):
+    if curr is None:
+      return curr, parent
+
     # a. split full nodes encountered during descent.
     # b. descend to find a leaf node (or node with exact key) for insertion
-
-
 
     # split full node before descent and before insert
     if curr.is_full():
@@ -210,52 +214,77 @@ class BalancedTree234:
       # continue search at newNode
 
     index,relation =curr.find_min_index_where_target_le_keys_elem(target_key)
-    if relation == Rel.EQUAL:  # case: exact match
+    if relation == Rel.EQ:  # case: exact match
       curr.data[index] =data   #  replace data at key
       return curr,parent     #  stop
-
-
-
-    return curr,parent
+    else: #then not equal
+      # if curr is a leaf, then insert
+      if curr.is_leaf():
+        curr.insert_key_value( target_key, data)
+        return curr,parent  # stop
+      else:
+        # else keep searching recursively
+        curr,parent =self.__find_location_and_insert(target_key, data, curr.children[index], parent)
+        return curr,parent
 
   def __split_node(self, node_to_split, parent_node, target_key ):
+    ### let node_to_split.keys= [40,50,60]
 
     new_node =node_to_split.split_full_node()
+    # node_to_split.keys =[40,50]
+    # new_node.keys =[60]
 
+    key_middle,data_middle =node_to_split.pop_key_data()
     if parent_node is self:
       # then splitting root node, so create a new root/parent , and attach *children
-      self.root =Node234( node_to_split.keys.pop(), node_to_split.data.pop(), node_to_split, new_node)
+      self.root =Node234( key_middle, data_middle, node_to_split, new_node)
+      parent_node =self.root
+      # new_root.keys =[50]
+      # new_root.children[0] =node_to_split    (and node_to_split.keys =[40])
+      # new_root.children[1] =new_node         (and new_node.keys =[60])
 
     else:
       # In parent_node exists, shift  keys[2],data[2],children[2]
       #   to right regardless if keys[2] is None.
-      #
-      parent_node.receive_middle_from_child( *node_to_split.pop_key_data() )
+      parent_node.insert_key_value( key_middle, data_middle, new_node )
+      # parent_node.keys =[50]
+      # parent_node.children[0] =node_to_split    (and node_to_split.keys =[40])
+      # parent_node.children[1] =new_node         (and new_node.keys =[60])
+
+
+    if target_key < key_middle:
+      # then continue the search to the *left*
+      rval_node =node_to_split
+    else: # key_middle < target_key
+      # then continue the search to the *right*
+      rval_node =new_node
+
+    return rval_node, parent_node
 
 
 
 
-    if not node_to_split.is_leaf():
-
-      nChild =len(node_to_split.children)
-      new_node =Node234( node_to_split.keys[2], node_to_split.data[2], node_to_split.children[2:nChild])
-      node_to_split.key.pop()
-      node_to_split.data.pop()
-      node_to_split.children.pop()
-
-    if not node_to_split.is_leaf():
-      # then move the children from node_to_split.children[2:3] to new_node[0:1]
-      new_node.children[0] =node_to_split.children[2]
-      new_node.children[1] =node_to_split.children[3]
-
-    return node_to_split,parent_node
+    # if not node_to_split.is_leaf():
+    #
+    #   nChild =len(node_to_split.children)
+    #   new_node =Node234( node_to_split.keys[2], node_to_split.data[2], node_to_split.children[2:nChild])
+    #   node_to_split.key.pop()
+    #   node_to_split.data.pop()
+    #   node_to_split.children.pop()
+    #
+    # if not node_to_split.is_leaf():
+    #   # then move the children from node_to_split.children[2:3] to new_node[0:1]
+    #   new_node.children[0] =node_to_split.children[2]
+    #   new_node.children[1] =node_to_split.children[3]
+    #
+    # return node_to_split,parent_node
 
   def remove(self, key):
     pass
 
 
 
-  def traverse(self, fnVisit):
+  def traverse(self, fn_visit):
     pass
 
 
