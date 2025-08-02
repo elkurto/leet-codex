@@ -136,6 +136,20 @@ class TestBalancedTree234(unittest.TestCase):
     self.assertListEqual( ['p',None,None], c2.keys[0:3])
     self.assertListEqual( ['s','x',None], c3.keys[0:3])
 
+  def test_traverse_pre_order(self):
+    chars ="searchxmpl"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    ary_keys =[]
+    def fn_visit_accumulate( x ):
+      ary_keys.append(x)
+
+    b.traverse_pre_order(fn_visit_accumulate)
+    ary_expected =['a','c','e','h','l','m','p','r','s','x']
+    self.assertListEqual(ary_expected, ary_keys)
 
 if __name__ == '__main__':
   unittest.main()

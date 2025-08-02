@@ -261,30 +261,32 @@ class BalancedTree234:
 
     return rval_node, parent_node
 
+  def traverse_pre_order(self, fn_visit):
+    self.__traverse_pre_order(fn_visit, self.root)
 
+  def __traverse_pre_order(self, fn_visit, curr):
+    if curr is None:
+      return
 
+    for i in range(0, curr.nkey()):
+      # process subtree less than curr.key[i]
+      if curr.children[i]:
+        self.__traverse_pre_order(fn_visit, curr.children[i])
 
-    # if not node_to_split.is_leaf():
-    #
-    #   nChild =len(node_to_split.children)
-    #   new_node =Node234( node_to_split.keys[2], node_to_split.data[2], node_to_split.children[2:nChild])
-    #   node_to_split.key.pop()
-    #   node_to_split.data.pop()
-    #   node_to_split.children.pop()
-    #
-    # if not node_to_split.is_leaf():
-    #   # then move the children from node_to_split.children[2:3] to new_node[0:1]
-    #   new_node.children[0] =node_to_split.children[2]
-    #   new_node.children[1] =node_to_split.children[3]
-    #
-    # return node_to_split,parent_node
+      # process curr.key[i]
+      fn_visit( curr.keys[i])
+    #end-for-i
+
+    # process subtree greater than curr.key[2]
+    if curr.children[3]:
+      self.__traverse_pre_order(fn_visit, curr.children[3])
+
 
   def remove(self, key):
     pass
 
 
 
-  def traverse(self, fn_visit):
-    pass
+
 
 
