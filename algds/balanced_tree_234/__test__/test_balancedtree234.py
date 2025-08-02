@@ -151,5 +151,24 @@ class TestBalancedTree234(unittest.TestCase):
     ary_expected =['a','c','e','h','l','m','p','r','s','x']
     self.assertListEqual(ary_expected, ary_keys)
 
+  def test_traverse_in_order(self):
+    chars ="searchxmpl"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    ary_string_representation =[]
+    def fn_visit_accumulate( node, curr_stack, chlld_stack ):
+      ary_string_representation.append( str(node.keys) )
+
+
+
+    b.traverse_in_order(fn_visit_accumulate)
+    ary_expected =['e,m,r','a,c,None','h,l,None','p,None,None']
+    self.assertListEqual(ary_expected, ary_string_representation)
+
+
+
 if __name__ == '__main__':
   unittest.main()

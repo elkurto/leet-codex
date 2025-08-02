@@ -281,6 +281,30 @@ class BalancedTree234:
     if curr.children[3]:
       self.__traverse_pre_order(fn_visit, curr.children[3])
 
+  def traverse_in_order(self, fn_visit):
+    # traverse from top down
+    self.__traverse_in_order( fn_visit, self.root)
+
+  def __traverse_in_order(self, fn_visit, curr):
+    curr_stack =[curr]
+    child_stack =[]
+    while len(curr_stack) > 0 or len(child_stack) > 0:
+      # process one node
+      ### pop from curr_stack
+      node =curr_stack.pop()
+      ### visit node
+      fn_visit(node, curr_stack, child_stack)
+      ### accumulate node's immediate children
+      for child in reversed( node.children[0:3] ):
+        if child:
+          child_stack.append(child)
+
+      if len(curr_stack) == 0:
+        # then move to next level deep and continue processing
+        curr_stack =child_stack
+        child_stack =[]
+
+
 
   def remove(self, key):
     pass
