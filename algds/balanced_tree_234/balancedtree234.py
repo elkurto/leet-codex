@@ -51,16 +51,8 @@ class Node234:
   def is_leaf(self):
     return len(self.children) == 0
 
-  def find_index_with_key_exact(self, key):
-    i =0
-    index_with_key =None
-    while i < len(self.keys):
-      if key == self.keys[i]:
-        index_with_key =i
-        break
-      else:
-        i +=1
-    return index_with_key
+
+
 
   def find_min_index_where_target_le_keys_elem(self, target):
     i =0
@@ -196,6 +188,40 @@ class BalancedTree234:
       curr =None
     return curr
 
+  def find_node_with_exact_key(self, target, curr, parent=None, b_prepare=False):
+    # return  curr_node, parent_node, idx_of_key (in curr_node)
+    #
+    # i =compute_i_idiom
+    # if b_prepare and child[i].is_two_node()  and child[i+1].is_two_node()
+    #  then curr =do_fusion_left( curr, i )
+    if curr is None:
+      return None,None,None
+
+    i =self.compute_idx_idiom(target, curr)
+    if i < curr.nkey() and target == curr.keys[i]:
+      # then found key
+      return curr,parent,i
+    else:
+      return self.find_node_with_exact_key(target, curr.keys[i], curr, b_prepare)
+
+  def find_node_with_predecessor_in_subtree(self, target, curr, parent=None, i, b_prepare=False):
+    # note: if curr is an internal node then predecessor always exist in a leaf node
+
+    # return  node,idx_of_key,parent_node
+    if curr is None or curr.is_leaf():
+      return None,None,None
+
+    # left, right, right, right...
+    node =curr.children[i]
+    j =node.nkeys()-1
+    while not node.is_leaf():
+      node =node.
+  # def find_node_with_successor_in_subtree(self, target, curr, b_prepare):
+  #   # return  node,idx_of_key,parent_node
+  #   if curr is None or curr.is_leaf():
+  #     return None,None,None
+
+
   def insert(self, key, data):
     if self.root is None:
       self.root =Node234(key, data)
@@ -310,6 +336,8 @@ class BalancedTree234:
 
   def do_fusion_left(self, parent, i):
     # pre: children[i] and children[i+1] are both two-nodes
+    # post: fused parent.keys[i], children[i+1].keys[0], children[i].key[0] into :node:children[i]
+    # return: :Node234: left (aka children[i])
     left =parent.children[i]
     right =parent.children[i+1]
 
@@ -325,59 +353,84 @@ class BalancedTree234:
     return left
 
   def contains(self, target):
-
     return self._contains(target, self.root)
 
   def _contains(self, target, curr):
     if curr is None:
       return False
+    i =self.compute_idx_idiom(target, curr)
+
+    if i < curr.nkey() and target == curr.keys[i]:
+      # then found target
+      return True
+    else:
+      # then not found target so keep searching recursively
+      return self._contains( target, curr.children[i])
+
+  def compute_idx_idiom(self, target, curr):
     i =0
     while i < curr.nkey() and target > curr.keys[i]:
       i+=1
-    if i < curr.nkey() and target == curr.keys[i]:
-      return True
-    else:
-      return self._contains( target, curr.children[i])
-    
-  def remove(self, target):
-    if target is None:
-      return
-    if not self.contains(target):
-      return
-    if self.root is None:
-      return
+    return i
 
-    if self.root.is_two_node() and not self.root.is_leaf():
+  def remove(self, target):
+    """
+    :param target: the key to find and remove
+    :return:  key,data  - if some key === target
+        None,None - if there exists no key === target
+    """
+    if target is None:
+      return None,None
+    if not self.contains(target):
+      return None,None
+    if self.root is None:
+      return None,None
+
+    if self.root.is_leaf():
+      i =self.compute_idx_idiom(target, self.root)
+      if i < self.root.nkey() and target == self.root.keys[i]:
+        return self.root.pop_key_data(i)
+
+    elif self.root.is_two_node():
       if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
-        #, then fuse root, children[0] and children[1]
+        #, then fuse root, children[0] and children[1] into children[0]
         self.root =self.do_fusion_left( self.root, 0)
 
-    self.__remove(self, target, self.root, None)
-  def __remove(self, target, curr, parent):
+    return self._remove(target, self.root, None)
 
-    if curr and curr.
-    if curr.is_two_node():
+
+  def _remove(self, target, curr, parent):
+    """
+    https://www.youtube.com/watch?v=94e-uBYK5nk&t=36s
+    # 1. Find node, curr.keys[i] === target and parent (of curr)
+    # 2. cases
+    #  2.1 If curr is leaf node with two keys then delete curr.key[i]/target from leaf_node.
+    #  2.2 if curr.keys[i] is in internal node then
+    #       - find predecessor of target in subtree of curr
+    #       - ensure predecessor rotate/merge
+    #  2.3 if left child (children
+    """
+    if curr is None:
+      return None,None
+
+
+
+    target_node,parent_of_target_node,i =
+    i =self.compute_idx_idiom(target, curr)
+    if i < curr.nkey() and curr.keys[i] == target:
+      # then found target
       if curr.is_leaf():
-        if target == curr.keys[0]:
-
-      elif curr.child[1].is_two_node():
-        #then fuse curr, child[0] and child[1] into a 4 node
+        if curr.is_two_node():
+        # then optionally rotate or fuse to ensure leaf/curr is not a 2node
+        # then remove and return targeted key,data # done
         pass # todo
       else:
-
-        if target < curr.keys[0]
-        i =0
-        while i < curr.nkey() and target > curr.keys[i]:
-          i+=1
-
-        # decide from which child to borrow/rotate
-        if target == curr.keys[0]:
+        # then curr is an interior node
+        # so push targeted key,data down toward leaf via rotation
 
 
-        if
-    else:
-      # then curr is a three_node or a four_node
-      # pass
+
+
 
 
   def __remove_junk(self, target, curr, parent):
