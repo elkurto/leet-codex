@@ -91,6 +91,9 @@ class Node234:
   def is_full(self):
     return len(self.keys) >= MAX_KEY
 
+  def is_two_node(self):
+    return len(self.keys) == 1
+
   def is_not_full(self):
     return len(self.keys) < MAX_KEY
 
@@ -305,9 +308,128 @@ class BalancedTree234:
         child_stack =[]
 
 
+  def do_fusion_left(self, parent, i):
+    # pre: children[i] and children[i+1] are both two-nodes
+    left =parent.children[i]
+    right =parent.children[i+1]
 
-  def remove(self, key):
-    pass
+    left.keys[1] =parent.keys[i]
+    left.data[1] =parent.data[i]
+
+    left.keys[2] =right.keys[0]
+    left.data[2] =right.data[0]
+
+    left.children[2] =right.children[0]
+    left.children[3] =right.children[1]
+
+    return left
+
+  def contains(self, target):
+
+    return self._contains(target, self.root)
+
+  def _contains(self, target, curr):
+    if curr is None:
+      return False
+    i =0
+    while i < curr.nkey() and target > curr.keys[i]:
+      i+=1
+    if i < curr.nkey() and target == curr.keys[i]:
+      return True
+    else:
+      return self._contains( target, curr.children[i])
+    
+  def remove(self, target):
+    if target is None:
+      return
+    if not self.contains(target):
+      return
+    if self.root is None:
+      return
+
+    if self.root.is_two_node() and not self.root.is_leaf():
+      if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
+        #, then fuse root, children[0] and children[1]
+        self.root =self.do_fusion_left( self.root, 0)
+
+    self.__remove(self, target, self.root, None)
+  def __remove(self, target, curr, parent):
+
+    if curr and curr.
+    if curr.is_two_node():
+      if curr.is_leaf():
+        if target == curr.keys[0]:
+
+      elif curr.child[1].is_two_node():
+        #then fuse curr, child[0] and child[1] into a 4 node
+        pass # todo
+      else:
+
+        if target < curr.keys[0]
+        i =0
+        while i < curr.nkey() and target > curr.keys[i]:
+          i+=1
+
+        # decide from which child to borrow/rotate
+        if target == curr.keys[0]:
+
+
+        if
+    else:
+      # then curr is a three_node or a four_node
+      # pass
+
+
+  def __remove_junk(self, target, curr, parent):
+    if curr.is_two_node() and not curr.is_leaf():
+      # then make a 3 node or 4 node via fusion or right_rotation or left_rotation
+      if curr.children[0].is_two_node() and curr.children[1].is_two_node():
+        # fusion
+        curr.keys[1] =curr.keys[0]
+        curr.data[1] =curr.data[0]
+
+        child0 =curr.children[0]
+        curr.keys[0] =child0.keys[0]
+        curr.data[0] =child0.data[0]
+        curr.children[0] =child0.children[0]
+        curr.children[1] =child0.children[1]
+
+        child1 =curr.children[1]
+        curr.keys[2] =child1.keys[0]
+        curr.data[2] =child1.data[0]
+        curr.children[2] =child1.children[0]
+        curr.children[3] =child1.children[1]
+      elif
+    i =0
+    while i < curr.nkey() and target > curr.keys[i]:
+      i+=1
+
+    ### i indicates the subtree to follow (curr.children[i]) or target_key (where curr.keys[i] ==target)
+    ### note: i=0 => target <= curr.key[0]  so either key found or keep searching in curr.children[0]
+    ###       i=1 => target <= curr.key[1]  so either key found or keep searching in curr.children[1]
+    ###       i=2 => target <= curr.key[2]  so either key found or keep searching in curr.children[2]
+    ###       i=3 =>  curr.key[2] < target  so keep searching in curr.children[3]
+
+    if curr.is_leaf():
+      if i < 3 and target == curr.key[i]:
+        curr.pop_key_data(i)
+      #otherwise target not in tree so  quit
+    else:
+      # internal node
+      if i < 3 and target == curr.key[i]:
+        # then key found in non-leaf (interior)
+        #-- so rotate or fuse down curr.key[i] to child
+        if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
+          # then fuse curr.keys[i], curr.children[i], curr.children[i+1]
+
+
+
+
+      else:
+        # then key not found so descend
+        self.__remove(target, curr.children[i], curr)
+
+
 
 
 
