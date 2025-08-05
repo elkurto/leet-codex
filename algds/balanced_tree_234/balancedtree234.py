@@ -390,6 +390,8 @@ class BalancedTree234:
       i =self.compute_idx_idiom(target, self.root)
       if i < self.root.nkey() and target == self.root.keys[i]:
         return self.root.pop_key_data(i)
+      else:
+        return None,None
 
     elif self.root.is_two_node():
       if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
@@ -400,87 +402,55 @@ class BalancedTree234:
 
 
   def _remove(self, target, curr, parent):
+
     """
+    1. find *target_node* and *idx_in_target_node* with b_prepare =True
+    2. replace target_node.keys[idx_in_target_node] with predecessor
+    2.a find predecessor (max key in subtree target_node.children[idx_in_target_node]) with b_prepare=True
+    2.b at target_node.keys[idx_in_target_node], remove target key,date and replace with predecessor
+    or
+    3. replace target_node.keys[idx_in_target_node] with successor
+    """
+    target_node,target_parent,target_idx =self.find_node_with_exact_key(target, curr, parent, True)
+    if target_node.is_leaf():
+      key,data =target_node.pop_key_data( target_idx)
+      return key,data
+
+    subtree_left =target_node.children[target_idx]
+    # find precessor of target_node[target_idx]
+    pred_node,pred_parent,pred_idx =self.find_max_in_subtree(subtree_left, target_node, True)
+    key =target_node.keys[target_idx]
+    data =target_node.data[target_idx]
+    predecessor_key,predecessor_data =pred_node.pop_key_data(pred_idx)
+    target_node.keys[target_idx] =predecessor_key
+    target_node.data[target_idx] =predecessor_data
+
+    return key,data
+
+
+
+
+"""
     https://www.youtube.com/watch?v=94e-uBYK5nk&t=36s
     # 1. Find node, curr.keys[i] === target and parent (of curr)
     # 2. cases
     #  2.1 If curr is leaf node with two keys then delete curr.key[i]/target from leaf_node.
+    #        (no rotate, no merge)
     #  2.2 if curr.keys[i] is in internal node then
-    #       - find predecessor of target in subtree of curr
-    #       - ensure predecessor rotate/merge
+    #       - find predecessor of target in subtree of curr.child[i+1]
+    #       - rotate/merge to ensure predecessor can be swapped
+    #       or
+    #       - find successor of target in subtree of curr.children[i+1]
+    #       - rotate/merge to ensure successor can be swapped
+    #
     #  2.3 if left child (children
-    """
-    if curr is None:
-      return None,None
-
-
-
-    target_node,parent_of_target_node,i =
-    i =self.compute_idx_idiom(target, curr)
-    if i < curr.nkey() and curr.keys[i] == target:
-      # then found target
-      if curr.is_leaf():
-        if curr.is_two_node():
-        # then optionally rotate or fuse to ensure leaf/curr is not a 2node
-        # then remove and return targeted key,data # done
-        pass # todo
-      else:
-        # then curr is an interior node
-        # so push targeted key,data down toward leaf via rotation
+"""
 
 
 
 
 
 
-  def __remove_junk(self, target, curr, parent):
-    if curr.is_two_node() and not curr.is_leaf():
-      # then make a 3 node or 4 node via fusion or right_rotation or left_rotation
-      if curr.children[0].is_two_node() and curr.children[1].is_two_node():
-        # fusion
-        curr.keys[1] =curr.keys[0]
-        curr.data[1] =curr.data[0]
-
-        child0 =curr.children[0]
-        curr.keys[0] =child0.keys[0]
-        curr.data[0] =child0.data[0]
-        curr.children[0] =child0.children[0]
-        curr.children[1] =child0.children[1]
-
-        child1 =curr.children[1]
-        curr.keys[2] =child1.keys[0]
-        curr.data[2] =child1.data[0]
-        curr.children[2] =child1.children[0]
-        curr.children[3] =child1.children[1]
-      elif
-    i =0
-    while i < curr.nkey() and target > curr.keys[i]:
-      i+=1
-
-    ### i indicates the subtree to follow (curr.children[i]) or target_key (where curr.keys[i] ==target)
-    ### note: i=0 => target <= curr.key[0]  so either key found or keep searching in curr.children[0]
-    ###       i=1 => target <= curr.key[1]  so either key found or keep searching in curr.children[1]
-    ###       i=2 => target <= curr.key[2]  so either key found or keep searching in curr.children[2]
-    ###       i=3 =>  curr.key[2] < target  so keep searching in curr.children[3]
-
-    if curr.is_leaf():
-      if i < 3 and target == curr.key[i]:
-        curr.pop_key_data(i)
-      #otherwise target not in tree so  quit
-    else:
-      # internal node
-      if i < 3 and target == curr.key[i]:
-        # then key found in non-leaf (interior)
-        #-- so rotate or fuse down curr.key[i] to child
-        if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
-          # then fuse curr.keys[i], curr.children[i], curr.children[i+1]
-
-
-
-
-      else:
-        # then key not found so descend
-        self.__remove(target, curr.children[i], curr)
 
 
 
