@@ -188,7 +188,7 @@ class BalancedTree234:
       curr =None
     return curr
 
-  def find_node_with_exact_key(self, target, curr, parent=None, b_prepare=False):
+  def _find_node_with_exact_key_and_prep_for_remove(self, target, curr, parent=None):
     # return  curr_node, parent_node, idx_of_key (in curr_node)
     #
     # i =compute_i_idiom
@@ -202,24 +202,15 @@ class BalancedTree234:
       # then found key
       return curr,parent,i
     else:
-      return self.find_node_with_exact_key(target, curr.keys[i], curr, b_prepare)
+      if curr.is_leaf():
+        return None,None,None
+      else:
+        if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
+          curr,parent,i =self.do_fusion_left(curr, parent, i)
 
-  def find_node_with_predecessor_in_subtree(self, target, curr, parent=None, i, b_prepare=False):
-    # note: if curr is an internal node then predecessor always exist in a leaf node
+      return self._find_node_with_exact_key_and_prep_for_remove(target, curr.keys[i], curr)
 
-    # return  node,idx_of_key,parent_node
-    if curr is None or curr.is_leaf():
-      return None,None,None
 
-    # left, right, right, right...
-    node =curr.children[i]
-    j =node.nkeys()-1
-    while not node.is_leaf():
-      node =node.
-  # def find_node_with_successor_in_subtree(self, target, curr, b_prepare):
-  #   # return  node,idx_of_key,parent_node
-  #   if curr is None or curr.is_leaf():
-  #     return None,None,None
 
 
   def insert(self, key, data):
@@ -333,24 +324,46 @@ class BalancedTree234:
         curr_stack =child_stack
         child_stack =[]
 
+  def _find_idx_of_curr_node_in_parent_children(self, curr, parent):
+    if parent is None or curr is None:
+      return None
 
-  def do_fusion_left(self, parent, i):
+    idx_rval =None
+    i =0
+    while i < parent.nchild():
+      if curr is parent.children[i]:
+        idx_rval =i
+        break
+      else:
+        i +=1
+    #end-while
+    return idx_rval
+
+  def do_fusion_left(self, curr, parent, i):
     # pre: children[i] and children[i+1] are both two-nodes
     # post: fused parent.keys[i], children[i+1].keys[0], children[i].key[0] into :node:children[i]
     # return: :Node234: left (aka children[i])
-    left =parent.children[i]
-    right =parent.children[i+1]
+    left =curr.children[i]                # make some dummy vars
+    right =curr.children[i+1]
 
-    left.keys[1] =parent.keys[i]
-    left.data[1] =parent.data[i]
+    curr_key, curr_data =curr.pop_key_data(i)
+    left.keys[1] =curr_key                # move key and data from curr to left
+    left.data[1] =curr_data
 
-    left.keys[2] =right.keys[0]
+    left.keys[2] =right.keys[0]           # move key and data from right to left
     left.data[2] =right.data[0]
 
-    left.children[2] =right.children[0]
+    left.children[2] =right.children[0]   # move children from right to left
     left.children[3] =right.children[1]
 
-    return left
+    curr.children.pop( i+1 )              # remove right from curr
+
+    new_parent =curr
+    if curr.nkey() == 0:
+      idx_of_curr_in_parent_children =self._find_idx_of_curr_node_in_parent_children(curr, parent)
+      parent.children[idx_of_curr_in_parent_children] =left
+      new_parent =parent
+    return left, new_parent, 1
 
   def contains(self, target):
     return self._contains(target, self.root)
@@ -396,12 +409,13 @@ class BalancedTree234:
     elif self.root.is_two_node():
       if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
         #, then fuse root, children[0] and children[1] into children[0]
-        self.root =self.do_fusion_left( self.root, 0)
+        self.root =self.do_fusion_left( self.root, None, 0)
 
     return self._remove(target, self.root, None)
 
 
-  def _remove(self, target, curr, parent):
+
+  def _remove(self, target, curr, parent, i=None):
 
     """
     1. find *target_node* and *idx_in_target_node* with b_prepare =True
@@ -411,19 +425,32 @@ class BalancedTree234:
     or
     3. replace target_node.keys[idx_in_target_node] with successor
     """
-    target_node,target_parent,target_idx =self.find_node_with_exact_key(target, curr, parent, True)
-    if target_node.is_leaf():
-      key,data =target_node.pop_key_data( target_idx)
+    if i is None:
+      curr,parent,i =self._find_node_with_exact_key_and_prep_for_remove(target, curr, parent)
+
+    if curr.is_leaf():
+      key,data =curr.pop_key_data( i )
       return key,data
 
-    subtree_left =target_node.children[target_idx]
-    # find precessor of target_node[target_idx]
-    pred_node,pred_parent,pred_idx =self.find_max_in_subtree(subtree_left, target_node, True)
-    key =target_node.keys[target_idx]
-    data =target_node.data[target_idx]
-    predecessor_key,predecessor_data =pred_node.pop_key_data(pred_idx)
-    target_node.keys[target_idx] =predecessor_key
-    target_node.data[target_idx] =predecessor_data
+    if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
+      curr,parent,i =self.do_fusion_left(curr,parent,i)
+      return self._remove(target, curr, parent, i)
+
+    elif curr.children[i].is_two_node():
+      # then curr.children[i+1] is a three node or four node
+      #  so replace curr.keys[i] and curr.data[i] with key_successor and data_successor
+      key_successor,data_successor =self._delete_min_in_subtree(curr.children[i+1], curr )
+      @todo find target in subtree (because target key may have moved)
+      curr,parent,i =self._find_node_with_key_no_prep(target, curr)
+      key,data =self._replace_key_data( curr, i, key_successor,data_successor )
+
+    elif curr.children[i+1].is_two_node():
+      # then curr.children[i] is a three node or four node
+      #  so replace curr.keys[i] and curr.data[i] with key_predecessor and data_predecessor
+      key_predecessor,data_predecessor =self._delete_max_in_subtree(curr.children[i], curr )
+      @todo find target in subtree (because target key may have moved)
+      curr,parent,i =self._find_node_with_key_no_prep(target, curr)
+      key,data =self._replace_key_data( curr, i, key_predecessor,data_predecessor )
 
     return key,data
 
