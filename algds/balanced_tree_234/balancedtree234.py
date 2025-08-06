@@ -463,12 +463,23 @@ class BalancedTree234:
     if i is None:
       curr,parent,i =self._find_node_with_exact_key_and_prep_for_remove(target, curr, parent)
 
-    if curr.is_leaf():
-      key,data =curr.pop_key_data( i )
-      return key,data
+    if curr is None:
+      # then target does not exist
+      return None,None
 
+    if curr.is_leaf():
+      if i < curr.nkey():
+        # then target exists in leaf
+        key,data =curr.pop_key_data( i )
+        return key,data
+      else:
+        # then target does not exist
+        return None,None
+
+    # now find successor or predecessor, then swap out target_key and target_data.
     if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
       curr,parent,i =self.do_fusion_left(curr,parent,i)
+      # note: fusion move the target key so
       return self._remove(target, curr, parent, i)
 
     elif curr.children[i].is_two_node():
@@ -477,11 +488,12 @@ class BalancedTree234:
       key_successor,data_successor =self._delete_min_in_subtree(curr.children[i+1], curr )
       key,data =curr.replace_key_data_at_i( key_successor,data_successor, i)
 
-    elif curr.children[i+1].is_two_node():
+    else: # then curr.children[i+1].is_two_node():
       # then curr.children[i] is a three node or four node
       #  so replace curr.keys[i] and curr.data[i] with key_predecessor and data_predecessor
       key_predecessor,data_predecessor =self._delete_max_in_subtree(curr.children[i], curr )
       key,data =curr.replace_key_data_at_i( key_predecessor,data_predecessor, i )
+
 
     return key,data
 
