@@ -440,21 +440,71 @@ class BalancedTree234:
       # then curr.children[i+1] is a three node or four node
       #  so replace curr.keys[i] and curr.data[i] with key_successor and data_successor
       key_successor,data_successor =self._delete_min_in_subtree(curr.children[i+1], curr )
-      @todo find target in subtree (because target key may have moved)
-      curr,parent,i =self._find_node_with_key_no_prep(target, curr)
       key,data =self._replace_key_data( curr, i, key_successor,data_successor )
 
     elif curr.children[i+1].is_two_node():
       # then curr.children[i] is a three node or four node
       #  so replace curr.keys[i] and curr.data[i] with key_predecessor and data_predecessor
       key_predecessor,data_predecessor =self._delete_max_in_subtree(curr.children[i], curr )
-      @todo find target in subtree (because target key may have moved)
-      curr,parent,i =self._find_node_with_key_no_prep(target, curr)
       key,data =self._replace_key_data( curr, i, key_predecessor,data_predecessor )
 
     return key,data
 
+  def _replace_key_data(self, curr, i, key_replacer, data_replacer):
+    key_replaced =curr.keys[i]
+    data_replaced =curr.data[i]
 
+    curr.keys[i] =key_replacer
+    curr.data[i] =data_replacer
+
+    return key_replaced, data_replaced
+
+  def _delete_min_in_subtree(self, curr, parent):
+    # pre: curr is not a two_node
+    if curr.is_two_node():
+      raise Exception('Exception: precondition violation ::: curr must be a three_node or four_node')
+
+    if curr.is_leaf():
+      key_min,data_min =curr.pop_key_data(0)
+      return key_min,data_min
+    else:
+      if curr.children[0].is_two_node() and curr.children[1].is_two_node():
+        # ensure that curr.children[0] is not a two node
+        curr,parent,_ =self.do_fusion_left(curr, parent, 0)
+        return self._delete_min_in_subtree(curr, parent)
+      elif curr.children[0].is_two_node():
+        # ensure that curr.children[0] is not a two node
+        self._rotate_left( curr, 0)
+      return self._delete_min_in_subtree(curr.children[0], curr)
+
+  def _rotate_left(self, curr, i):
+    """
+                        rotate_left(curr,i=0) -->
+    curr= [25, 50,..]                        curr= [30,50,...]
+          /   |                                    /   /
+       [4]   [30,35,..] [...] [...]          [4,25]  [35,..] [...] [...]
+      /  |    |  ...                        /  |  |    ...
+   s4.0 s4.1 s30.0 ...                  s4.0 s4.1 s30.0 ...
+
+    note: s4.0, s4.1, and s30.0 represent children (subtree or None)
+    """
+    right =curr.chldren[i+1]
+    left =curr.children[i]
+
+    # remove min key,data,child from :node:right
+    min_key_right, min_data_right =right.pop_key_data( 0)
+    min_right_child =right.pop(0)
+
+    # replace curr.keys[i] and curr.data[i]
+    key_i,data_i =self._replace_key_data(curr, i, min_key_right, min_data_right)
+
+    # left node receives
+    left.insert_key_value( key_i, data_i, min_right_child)
+
+
+
+
+  def _delete_max_in_subtree(self, curr, parent):
 
 
 """
