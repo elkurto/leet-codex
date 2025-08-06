@@ -199,26 +199,51 @@ class BalancedTree234:
     return curr
 
   def _find_node_with_exact_key_and_prep_for_remove(self, target, curr, parent=None):
-    # return  curr_node, parent_node, idx_of_key (in curr_node)
+    # return
+    #   if target key exist
+    #   ,then return curr_node, parent_node, idx_of_key (in curr_node)
+    #   else # target does not exist
+    #   ,then return None,None,None
     #
-    # i =compute_i_idiom
-    # if b_prepare and child[i].is_two_node()  and child[i+1].is_two_node()
-    #  then curr =do_fusion_left( curr, i )
     if curr is None:
       return None,None,None
 
     i =self.compute_idx_idiom(target, curr)
     if i < curr.nkey() and target == curr.keys[i]:
-      # then found key
-      return curr,parent,i
-    else:
-      if curr.is_leaf():
-        return None,None,None
-      else:
-        if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
-          curr,parent,i =self.do_fusion_left(curr, parent, i)
+      return curr, parent, i
+    elif curr.is_leaf():
+      return None,None,None
 
-      return self._find_node_with_exact_key_and_prep_for_remove(target, curr.keys[i], curr)
+    # note: i is the index in curr.children to travel nextly.
+    # note: j is the index in curr.keys that attaches to curr.children[i]
+    # (ie curr.children[i] is the subtree to search nextly)
+    # (ie curr.keys[j] is the parent key of curr.children[i])
+    # (ie curr.children[i] is the right or the left child of curr.keys[j])
+    j =i if i < curr.nkey() else i-1
+
+    if curr.children[j].is_two_node() and curr.children[j+1].is_two_node():
+      #, then fuse curr.key[j], children[j] and children[j+1] into children[j]
+      curr,parent,j =self.do_fusion_left( curr, parent, j)
+      return self._find_node_with_exact_key_and_prep_for_remove(target, curr, parent)
+    elif curr.children[i].is_two_node():
+      # then child to travel is a 2node and sibling is 3node or 4node
+      #  so rotate from fuller sibling to curr.children[i] (ie node to visit nextly)
+      if i == j:
+        # then rotate left from curr.children[i+1]
+        # and rotate down curr.key[i] into curr.children[i]
+        self._rotate_left(curr, j )
+      else: # i-1 = j
+        # then rotate right from curr.children[i-1]
+        # and rotate down curr.key[i] into curr.children[i]
+        self._rotate_right(curr, j )
+      # recursively continue to descend
+      return self._find_node_with_exact_key_and_prep_for_remove(target, curr.children[i], curr)
+    else:
+      # then curr.children[i] is a 3node or 4node
+      # recursively continue to descend (and no need to modify curr.children[i]
+      return self._find_node_with_exact_key_and_prep_for_remove(target, curr.children[i], curr)
+
+
 
 
 
@@ -479,6 +504,8 @@ class BalancedTree234:
       return self._delete_min_in_subtree(curr.children[0], curr)
 
   def _rotate_left(self, curr, i):
+    # :param: curr :Node234 -
+    # :param: i :int - i indicates the intent to rotate-left-down curr.keys[i]
     """
                         rotate_left(curr,i=0) -->
     curr= [25, 50,..]                        curr= [30,50,...]
