@@ -135,6 +135,16 @@ class Node234:
     data =self.data.pop(idx)
     return key,data
 
+  def replace_key_data_at_i(self, key_replacer, data_replacer, i):
+    key_replaced =self.keys[i]
+    data_replaced =self.data[i]
+
+    self.keys[i] =key_replacer
+    self.data[i] =data_replacer
+
+    return key_replaced, data_replaced
+
+
   def split_full_node(self):
     """
 
@@ -399,19 +409,19 @@ class BalancedTree234:
     if self.root is None:
       return None,None
 
-    if self.root.is_leaf():
-      i =self.compute_idx_idiom(target, self.root)
-      if i < self.root.nkey() and target == self.root.keys[i]:
-        return self.root.pop_key_data(i)
-      else:
-        return None,None
+    # if self.root.is_leaf():
+    #   i =self.compute_idx_idiom(target, self.root)
+    #   if i < self.root.nkey() and target == self.root.keys[i]:
+    #     return self.root.pop_key_data(i)
+    #   else:
+    #     return None,None
+    #
+    # elif self.root.is_two_node():
+    #   if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
+    #     #, then fuse root, children[0] and children[1] into children[0]
+    #     self.root =self.do_fusion_left( self.root, None, 0)
 
-    elif self.root.is_two_node():
-      if self.root.children[0].is_two_node() and self.root.children[1].is_two_node():
-        #, then fuse root, children[0] and children[1] into children[0]
-        self.root =self.do_fusion_left( self.root, None, 0)
-
-    return self._remove(target, self.root, None)
+    return self._remove(target, self.root, None, i=None)
 
 
 
@@ -440,24 +450,15 @@ class BalancedTree234:
       # then curr.children[i+1] is a three node or four node
       #  so replace curr.keys[i] and curr.data[i] with key_successor and data_successor
       key_successor,data_successor =self._delete_min_in_subtree(curr.children[i+1], curr )
-      key,data =self._replace_key_data( curr, i, key_successor,data_successor )
+      key,data =curr.replace_key_data_at_i( key_successor,data_successor, i)
 
     elif curr.children[i+1].is_two_node():
       # then curr.children[i] is a three node or four node
       #  so replace curr.keys[i] and curr.data[i] with key_predecessor and data_predecessor
       key_predecessor,data_predecessor =self._delete_max_in_subtree(curr.children[i], curr )
-      key,data =self._replace_key_data( curr, i, key_predecessor,data_predecessor )
+      key,data =curr.replace_key_data_at_i( key_predecessor,data_predecessor, i )
 
     return key,data
-
-  def _replace_key_data(self, curr, i, key_replacer, data_replacer):
-    key_replaced =curr.keys[i]
-    data_replaced =curr.data[i]
-
-    curr.keys[i] =key_replacer
-    curr.data[i] =data_replacer
-
-    return key_replaced, data_replaced
 
   def _delete_min_in_subtree(self, curr, parent):
     # pre: curr is not a two_node
@@ -496,7 +497,7 @@ class BalancedTree234:
     min_right_child =right.children.pop(0)
 
     # replace curr.keys[i] and curr.data[i]
-    key_i,data_i =self._replace_key_data(curr, i, min_key_right, min_data_right)
+    key_i,data_i =curr.replace_key_data_at_i(min_key_right, min_data_right, i)
 
     # left node receives
     left.insert_key_value( key_i, data_i, min_right_child)
@@ -548,7 +549,7 @@ class BalancedTree234:
     max_left_child =left.children.pop(idx_keys_left+1)
 
     # replace curr.keys[i] and curr.data[i]
-    key_i,data_i =self._replace_key_data(curr, i, max_key_left, max_data_left)
+    key_i,data_i =curr.replace_key_data_at_i( max_key_left, max_data_left, i)
 
     # left node receives
     right.insert_key_value( key_i, data_i, max_left_child)
