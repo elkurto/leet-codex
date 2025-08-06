@@ -488,12 +488,12 @@ class BalancedTree234:
 
     note: s4.0, s4.1, and s30.0 represent children (subtree or None)
     """
-    right =curr.chldren[i+1]
     left =curr.children[i]
+    right =curr.chldren[i+1]
 
     # remove min key,data,child from :node:right
     min_key_right, min_data_right =right.pop_key_data( 0)
-    min_right_child =right.pop(0)
+    min_right_child =right.children.pop(0)
 
     # replace curr.keys[i] and curr.data[i]
     key_i,data_i =self._replace_key_data(curr, i, min_key_right, min_data_right)
@@ -502,26 +502,58 @@ class BalancedTree234:
     left.insert_key_value( key_i, data_i, min_right_child)
 
 
-
-
   def _delete_max_in_subtree(self, curr, parent):
+    # pre: curr is not a two_node
+    # pre: Let i =curr.nkey()-1 ;
+    #      either curr.children[i] and curr.children[i+1] both exist
+    #      or curr is leaf.
+    if curr.is_two_node():
+      raise Exception('Exception: precondition violation ::: curr must be a three_node or four_node')
 
+    i =curr.nkey() -1
+    if curr.is_leaf():
+      key_max,data_max =curr.pop_key_data(i)
+      return key_max,data_max
+    else:
+      if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
+        # then fuse to ensure that curr.children[0] is not a two node
+        curr,parent,_ =self.do_fusion_left(curr, parent, i-1)
+        return self._delete_max_in_subtree(curr, parent)
+      elif curr.children[i+1].is_two_node():
+        # then rotate_right to ensure that curr.children[0] is not a two node
+        self._rotate_right( curr, i)
+      return self._delete_max_in_subtree(curr.children[i+1], curr)
 
-"""
-    https://www.youtube.com/watch?v=94e-uBYK5nk&t=36s
-    # 1. Find node, curr.keys[i] === target and parent (of curr)
-    # 2. cases
-    #  2.1 If curr is leaf node with two keys then delete curr.key[i]/target from leaf_node.
-    #        (no rotate, no merge)
-    #  2.2 if curr.keys[i] is in internal node then
-    #       - find predecessor of target in subtree of curr.child[i+1]
-    #       - rotate/merge to ensure predecessor can be swapped
-    #       or
-    #       - find successor of target in subtree of curr.children[i+1]
-    #       - rotate/merge to ensure successor can be swapped
+  def _rotate_right(self, curr, i):
+    # pre: curr.children[i] and curr.children[i+1] exist
+    # @param i is the index in curr.keys to rotate (rightward and downward)
     #
-    #  2.3 if left child (children
-"""
+    """
+
+                          rotate_right(curr,i=nkey-1) -->
+      curr= [...  ,30   , ...   ]        curr= [...,25 , ...]
+                 /      \                          /   \
+         [..,4,25]       [50  ]               [..,4]    [30  ,  50]
+        ..  / |  \        |   \                 /  |    |    |    \
+    ..  s4.0 s4.1 s25.0  s50.0 s50.1        s4.0 s4.1  s25.0 s50.0 s50.1
+
+      note: s4.0, s4.1, s25.0, s50.0, s50.1 represent children (subtree or None)
+    """
+    left =curr.children[i]
+    right =curr.chldren[i+1]
+
+    # remove min key,data,child from :node:right
+    idx_keys_left =left.nkey()-1
+    max_key_left, max_data_left =left.pop_key_data( idx_keys_left)
+    max_left_child =left.children.pop(idx_keys_left+1)
+
+    # replace curr.keys[i] and curr.data[i]
+    key_i,data_i =self._replace_key_data(curr, i, max_key_left, max_data_left)
+
+    # left node receives
+    right.insert_key_value( key_i, data_i, max_left_child)
+
+
 
 
 
