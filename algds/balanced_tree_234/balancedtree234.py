@@ -169,6 +169,9 @@ class Node234:
   def nchild(self):
     return len(self.children)
 
+  def to_csv_keys(self):
+    return ",".join( [str(k) for k in self.keys])
+
 
 class BalancedTree234:
 
@@ -350,7 +353,7 @@ class BalancedTree234:
       ### visit node
       fn_visit(node, curr_stack, child_stack)
       ### accumulate node's immediate children
-      for child in reversed( node.children[0:3] ):
+      for child in reversed( node.children[0:4] ):
         if child:
           child_stack.append(child)
 
@@ -360,11 +363,14 @@ class BalancedTree234:
         child_stack =[]
 
   def print_tree(self):
-    ary =[]
+    ary =[""]
     def fn_print_node(node, curr_stack, child_stack):
-      ary.append(node)
+      ary[len(ary)-1] += node.to_csv_keys()
       if len(curr_stack) == 0:
-        ary.append(" |\n")
+        ary[len(ary)-1] +="|"
+        ary.append("")
+      else:
+        ary[len(ary)-1] +="  "
 
     self.traverse_in_order(fn_print_node)
 
@@ -542,12 +548,14 @@ class BalancedTree234:
 
     note: s4.0, s4.1, and s30.0 represent children (subtree or None)
     """
+    self.print_tree()
     left =curr.children[i]
-    right =curr.chldren[i+1]
+    right =curr.children[i+1]
 
     # remove min key,data,child from :node:right
     min_key_right, min_data_right =right.pop_key_data( 0)
-    min_right_child =right.children.pop(0)
+
+    min_right_child =None if right.is_leaf() else right.children.pop(0)
 
     # replace curr.keys[i] and curr.data[i]
     key_i,data_i =curr.replace_key_data_at_i(min_key_right, min_data_right, i)

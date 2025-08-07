@@ -173,17 +173,18 @@ class TestBalancedTree234(unittest.TestCase):
     for char in chars:
       b.insert(char, char*3)
 
+    b.print_tree()
     key,data =b._delete_min_in_subtree( b.root, None )
     self.assertEqual('a', key)
     self.assertEqual('aaa', data)
 
     b.print_tree()
 
-    # key,data =b._delete_min_in_subtree( b.root, None )
-    # self.assertEqual('b', key)
-    # self.assertEqual('bbb', data)
-    #
-    # b.print_tree()
+    key,data =b._delete_min_in_subtree( b.root, None )
+    self.assertEqual('c', key)
+    self.assertEqual('ccc', data)
+
+    b.print_tree()
 
 
 
