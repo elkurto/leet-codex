@@ -359,6 +359,18 @@ class BalancedTree234:
         curr_stack =child_stack
         child_stack =[]
 
+  def print_tree(self):
+    ary =[]
+    def fn_print_node(node, curr_stack, child_stack):
+      ary.append(node)
+      if len(curr_stack) == 0:
+        ary.append(" |\n")
+
+    self.traverse_in_order(fn_print_node)
+
+    for elem in ary:
+      print(elem)
+
   def _find_idx_of_curr_node_in_parent_children(self, curr, parent):
     if parent is None or curr is None:
       return None
@@ -426,13 +438,15 @@ class BalancedTree234:
     :param target: the key to find and remove
     :return:  key,data  - if some key === target
         None,None - if there exists no key === target
+    :post-condition: key,data removed from tree
     """
     if target is None:
       return None,None
-    if not self.contains(target):
-      return None,None
     if self.root is None:
       return None,None
+    # if not self.contains(target):
+    #   return None,None
+
 
     # if self.root.is_leaf():
     #   i =self.compute_idx_idiom(target, self.root)
