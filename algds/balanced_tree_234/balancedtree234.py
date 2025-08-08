@@ -152,7 +152,7 @@ class Node234:
     """
     if not self.is_full():
       raise Exception( f"Exception: attempting to split non-full node, len(node_to_split.keys) ={self.nkey()}")
-    new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:3])
+    new_right_node =Node234( self.keys.pop(), self.data.pop(), *self.children[2:4])
     if len(self.children) >= 3:
       self.children.pop() # remove self.children[3]
     if len(self.children) >= 2:
@@ -348,29 +348,28 @@ class BalancedTree234:
     child_stack =[]
     while len(curr_stack) > 0 or len(child_stack) > 0:
       # process one node
-      ### pop from curr_stack
-      node =curr_stack.pop()
-      ### visit node
-      fn_visit(node, curr_stack, child_stack)
-      ### accumulate node's immediate children
-      for child in reversed( node.children[0:4] ):
-        if child:
-          child_stack.append(child)
+      for node in curr_stack:
+        fn_visit( node, curr_stack, child_stack )
+        for child in node.children:
+          if child:
+            child_stack.append( child)
 
-      if len(curr_stack) == 0:
-        # then move to next level deep and continue processing
-        curr_stack =child_stack
-        child_stack =[]
+
+      curr_stack =child_stack
+      child_stack =[]
+
+
 
   def print_tree(self):
     ary =[""]
     def fn_print_node(node, curr_stack, child_stack):
-      ary[len(ary)-1] += node.to_csv_keys()
-      if len(curr_stack) == 0:
-        ary[len(ary)-1] +="|"
-        ary.append("")
+      ary[-1] += node.to_csv_keys()
+
+      if node is curr_stack[-1]:
+        ary[-1] +="|"
+        ary.append("")  # end-of-row
       else:
-        ary[len(ary)-1] +="  "
+        ary[-1] +="  " # separate nodes
 
     self.traverse_in_order(fn_print_node)
 

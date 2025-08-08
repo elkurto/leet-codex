@@ -166,6 +166,30 @@ class TestBalancedTree234(unittest.TestCase):
     ary_expected =['e,m,r','a,c,None','h,l,None','p,None,None', 's,x,None']
     self.assertListEqual(ary_expected, ary_string_representation)
 
+
+  def test_do_fusion_left(self):
+    chars ="searchxmplbz"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    b.print_tree()
+    # m,None,None|
+    # e,None,None  r,None,None|
+    # a,b,c  h,l,None  p,None,None  s,x,z|
+
+    b.insert('o', 'ooo')
+    # e,m,r|
+    # a,b,c  h,l,None  o,p,None  s,x,z|
+
+
+
+
+
+
+
+
   def test_delete_min_in_subtree(self):
     chars ="searchxmpl"
     b =BalancedTree234()
