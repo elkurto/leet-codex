@@ -396,6 +396,8 @@ class BalancedTree234:
     # pre: children[i] and children[i+1] are both two-nodes
     # post: fused parent.keys[i], children[i+1].keys[0], children[i].key[0] into :node:children[i]
     # return: :Node234: left (aka children[i])
+    # note: fusion is symmetric , but we keep the left_node , throw away right_node
+    #       and move curr[i]
     left =curr.children[i]                # make some dummy vars
     right =curr.children[i+1]
 
@@ -414,9 +416,15 @@ class BalancedTree234:
 
     new_parent =curr
     if curr.nkey() == 0:
-      idx_of_curr_in_parent_children =self._find_idx_of_curr_node_in_parent_children(curr, parent)
-      parent.children[idx_of_curr_in_parent_children] =left
-      new_parent =parent
+      if curr == self.root:
+        self.root =left
+        new_parent =None
+      else:
+        idx_of_curr_in_parent_children =self._find_idx_of_curr_node_in_parent_children(curr, parent)
+        parent.children[idx_of_curr_in_parent_children] =left
+        new_parent =parent
+
+
     return left, new_parent, 1
 
   def contains(self, target):
@@ -530,7 +538,7 @@ class BalancedTree234:
       if curr.children[0].is_two_node() and curr.children[1].is_two_node():
         # ensure that curr.children[0] is not a two node
         curr,parent,_ =self.do_fusion_left(curr, parent, 0)
-        return self._delete_min_in_subtree(curr, parent)
+        return self._delete_min_in_subtree(curr, parent) # ???? dodgy
       elif curr.children[0].is_two_node():
         # ensure that curr.children[0] is not a two node
         self._rotate_left( curr, 0)
@@ -560,7 +568,7 @@ class BalancedTree234:
     # replace curr.keys[i] and curr.data[i]
     key_i,data_i =curr.replace_key_data_at_i(min_key_right, min_data_right, i)
 
-    # left node receives
+    # left node receives key_i (and data_i) from parent
     left.insert_key_value( key_i, data_i, min_right_child)
 
 
@@ -579,7 +587,7 @@ class BalancedTree234:
     else:
       if curr.children[i].is_two_node() and curr.children[i+1].is_two_node():
         # then fuse to ensure that curr.children[0] is not a two node
-        curr,parent,_ =self.do_fusion_left(curr, parent, i-1)
+        curr,parent,_ =self.do_fusion_left(curr, parent, i)
         return self._delete_max_in_subtree(curr, parent)
       elif curr.children[i+1].is_two_node():
         # then rotate_right to ensure that curr.children[0] is not a two node
@@ -604,7 +612,7 @@ class BalancedTree234:
     left =curr.children[i]
     right =curr.chldren[i+1]
 
-    # remove min key,data,child from :node:right
+    # remove max key,data,child from :node:left
     idx_keys_left =left.nkey()-1
     max_key_left, max_data_left =left.pop_key_data( idx_keys_left)
     max_left_child =left.children.pop(idx_keys_left+1)
@@ -612,8 +620,10 @@ class BalancedTree234:
     # replace curr.keys[i] and curr.data[i]
     key_i,data_i =curr.replace_key_data_at_i( max_key_left, max_data_left, i)
 
-    # left node receives
+    # right node receives key_i (and data_i) from parent
     right.insert_key_value( key_i, data_i, max_left_child)
+    print("in rotate_right")
+    self.print_tree()
 
 
 

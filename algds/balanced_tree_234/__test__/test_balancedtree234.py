@@ -163,7 +163,7 @@ class TestBalancedTree234(unittest.TestCase):
       ary_string_representation.append( str(node.keys) )
 
     b.traverse_in_order(fn_visit_accumulate)
-    ary_expected =['e,m,r','a,c,None','h,l,None','p,None,None']
+    ary_expected =['e,m,r','a,c,None','h,l,None','p,None,None', 's,x,None']
     self.assertListEqual(ary_expected, ary_string_representation)
 
   def test_delete_min_in_subtree(self):
@@ -195,7 +195,41 @@ class TestBalancedTree234(unittest.TestCase):
     self.assertEqual('e', key)
     self.assertEqual('eee', data)
 
+    b.print_tree()
+    # h,m,r|
+    # e,None,None  l,None,None  p,None,None  s,x,None|
+
+  def test_delete_max_in_subtree(self):
+    chars ="searchxmpl"
+    b =BalancedTree234()
+    # insert each character as a key
+    for char in chars:
+      b.insert(char, char*3)
+
+    b.print_tree()
+    # e,m,r|
+    # a,c,None  h,l,None  p,None,None  s,x,None|
+
+    key,data =b._delete_max_in_subtree( b.root, None )
+    self.assertEqual('x', key)
+    self.assertEqual('xxx', data)
+
+    b.print_tree()
+    # e,m,r|
+    # a,c,None  h,l,None  p,None,None  s,None,None|
+
+    key,data =b._delete_max_in_subtree( b.root, None )
+    self.assertEqual('s', key)
+    self.assertEqual('sss', data)
+
+    b.print_tree()
+    # e,m,None|
+    # a,c,None  h,l,None  p,r,None|
+
 
 
 if __name__ == '__main__':
   unittest.main()
+
+# todo - test do_fusion_left at when curr ==self.root
+# todo - test remove( target ) 
