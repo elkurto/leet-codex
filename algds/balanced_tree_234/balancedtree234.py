@@ -406,8 +406,9 @@ class BalancedTree234:
     left.keys[2] =right.keys[0]           # move key and data from right to left
     left.data[2] =right.data[0]
 
-    left.children[2] =right.children[0]   # move children from right to left
-    left.children[3] =right.children[1]
+    if not right.is_leaf():
+      left.children[2] =right.children[0]   # move children from right to left
+      left.children[3] =right.children[1]
 
     curr.children.pop( i+1 )              # remove right from curr
 
@@ -548,7 +549,6 @@ class BalancedTree234:
 
     note: s4.0, s4.1, and s30.0 represent children (subtree or None)
     """
-    self.print_tree()
     left =curr.children[i]
     right =curr.children[i+1]
 
