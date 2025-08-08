@@ -579,7 +579,7 @@ class BalancedTree234:
     # pre: Let i =curr.nkey()-1 ;
     #      either curr.children[i] and curr.children[i+1] both exist
     #      or curr is leaf.
-    if curr.is_two_node():
+    if curr.is_two_node() and curr is not self.root:
       raise Exception('Exception: precondition violation ::: curr must be a three_node or four_node')
 
     i =curr.nkey() -1

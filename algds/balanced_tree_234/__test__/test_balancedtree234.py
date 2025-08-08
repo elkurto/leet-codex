@@ -180,12 +180,22 @@ class TestBalancedTree234(unittest.TestCase):
     # a,b,c  h,l,None  p,None,None  s,x,z|
 
     b.insert('o', 'ooo')
-    # e,m,r|
+    # m,None,None|
+    # e,None,None  r,None,None|
     # a,b,c  h,l,None  o,p,None  s,x,z|
+    b.print_tree()
+    self.assertListEqual( ['m',None,None], b.root.keys[0:3])
 
+    # make a fusion occur at root by deleting z
+    key,data =b._delete_max_in_subtree(b.root, None)
+    b.print_tree()
+    self.assertListEqual( ['e','m','r'], b.root.keys[0:3])
+    self.assertEqual( 'z', key)
+    self.assertEqual( 'zzz', data)
 
-
-
+    # make a split occur at root by inserting z
+    b.insert( 'z', 'zzz')
+    self.assertListEqual( ['m',None,None], b.root.keys[0:3])
 
 
 
