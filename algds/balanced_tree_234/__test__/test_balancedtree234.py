@@ -232,4 +232,4 @@ if __name__ == '__main__':
   unittest.main()
 
 # todo - test do_fusion_left at when curr ==self.root
-# todo - test remove( target ) 
+# todo - test remove( target )

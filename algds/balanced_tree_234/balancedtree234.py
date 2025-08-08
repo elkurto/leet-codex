@@ -416,10 +416,13 @@ class BalancedTree234:
 
     new_parent =curr
     if curr.nkey() == 0:
+      # then curr is empty so replace curr with left in parent.children
       if curr == self.root:
+        # then repace self.root with left
         self.root =left
         new_parent =None
       else:
+        # then replace curr with left in parent.children
         idx_of_curr_in_parent_children =self._find_idx_of_curr_node_in_parent_children(curr, parent)
         parent.children[idx_of_curr_in_parent_children] =left
         new_parent =parent
