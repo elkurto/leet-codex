@@ -344,6 +344,9 @@ class BalancedTree234:
     self.__traverse_in_order( fn_visit, self.root)
 
   def __traverse_in_order(self, fn_visit, curr):
+    if self.root is None:
+      return
+
     curr_stack =[curr]
     child_stack =[]
     while len(curr_stack) > 0 or len(child_stack) > 0:
@@ -357,7 +360,7 @@ class BalancedTree234:
 
       curr_stack =child_stack
       child_stack =[]
-
+    #end-while
 
 
   def print_tree(self):
@@ -371,10 +374,13 @@ class BalancedTree234:
       else:
         ary[-1] +="  " # separate nodes
 
-    self.traverse_in_order(fn_print_node)
+    if self.root is None:
+      print("self.root is None")
+    else:
+      self.traverse_in_order(fn_print_node)
 
-    for elem in ary:
-      print(elem)
+      for elem in ary:
+        print(elem)
 
   def _find_idx_of_curr_node_in_parent_children(self, curr, parent):
     if parent is None or curr is None:

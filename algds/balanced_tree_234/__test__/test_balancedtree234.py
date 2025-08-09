@@ -265,8 +265,29 @@ class TestBalancedTree234(unittest.TestCase):
     # e,m,None|
     # a,c,None  h,l,None  p,r,None|
 
-  def test_remove(self):
-    pass
+  def test_remove_searchxmplz_remove_p(self):
+    chars ="searchxmplz"
+    b =BalancedTree234()
+    for char in chars:
+      b.insert(char, char*3)
+
+    b.print_tree()
+    # m,None,None|
+    # e,None,None r,None,None|
+    # a,c,None  h,l,None  p,None,None  s,x,z|
+
+    key,data =b.remove('p')
+    self.assertEqual('p', key)
+    b.print_tree()
+    # e,m,s|
+    # a,c,None  h,l,None  r,None,None  x,z,None|
+
+    self.assertEqual('e,m,s', b.root.to_csv_keys())
+    self.assertEqual('a,c,None', b.root.children[0].to_csv_keys())
+    self.assertEqual('h,l,None', b.root.children[1].to_csv_keys())
+    self.assertEqual('r,None,None', b.root.children[2].to_csv_keys())
+    self.assertEqual('x,z,None', b.root.children[3].to_csv_keys())
+
 
 
 if __name__ == '__main__':
