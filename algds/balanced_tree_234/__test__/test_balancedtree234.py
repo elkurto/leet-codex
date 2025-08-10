@@ -288,7 +288,18 @@ class TestBalancedTree234(unittest.TestCase):
     self.assertEqual('r,None,None', b.root.children[2].to_csv_keys())
     self.assertEqual('x,z,None', b.root.children[3].to_csv_keys())
 
+    key,data =b.remove('h')
+    key,data =b.remove('l') # causes fusion of l,m,r then remove 'l'
+    b.print_tree()
+    # e,s,None|
+    # a,c,None  m,r,None  x,z,None|
+    self.assertEqual( 'e,s,None', b.root.to_csv_keys())
 
+    key,data =b.remove('s')  # causes swap s with successor, 'r', then remove 's'
+    b.print_tree()
+    # e,r,None|
+    # a,c,None  m,None  x,z,None|
+    self.assertEqual( 'e,r,None', b.root.to_csv_keys())
 
 if __name__ == '__main__':
   unittest.main()
