@@ -41,12 +41,13 @@ class AVLtree(object):
 
 
   def __init__(self):        # Constructor for empty AVL tree
-    self.__root = None      # No root node in empty tree
+    self.root = None      # No root node in empty tree
 
   def is_empty(self):         # Check for empty tree
-    return self.__root is None
+    return self.root is None
 
-  def __find(self, goal, node): # Find a node that matches goal key
+  @classmethod
+  def __find(cls, goal, node): # Find a node that matches goal key
     while node is not None: # Loop until we reach an empty link
       if node.key == goal: # Check if current node's key matches
         return node       # and return it if it does
@@ -57,13 +58,13 @@ class AVLtree(object):
     return None             # If loop ends, goal wasn't found
 
   def search(self, goal):    # Search for an item whose key matches a
-    node = self.__find(goal, self.__root) # goal starting at root
+    node = self.__find(goal, self.root) # goal starting at root
     # Return the node's data, if found
     return node.data if node else None
 
   def insert(self, key, data): # Insert an item into the AVL tree
-    self.__root, flag = self.__insert( # Reset the root to be the
-      self.__root, key, data) # modified tree and return the
+    self.root, flag = self.__insert( # Reset the root to be the
+      self.root, key, data) # modified tree and return the
     return flag             # the insert vs. update flag
 
   def __insert(self,         # Insert an item into an AVL subtree
@@ -82,11 +83,12 @@ class AVLtree(object):
       if node.compute_height_diff() > 1: # If insert made node left heavy
 
         if node.left.key < key: # If inside grandchild inserted,
-          node.left = self.rotate_left( # then raise grandchild
-            node.left)
+          # then raise grandchild
+          node.left = self.rotate_left( node.left)
 
-        node = self.rotate_right( # Correct left heavy tree by
-          node)          # rotating right around this node
+        # Correct left heavy tree by
+        # rotating right around this node
+        node = self.rotate_right( node)
 
     else:                   # Otherwise key belongs in right subtree
       node.right, flag = self.__insert( # Insert it on right and
@@ -103,7 +105,8 @@ class AVLtree(object):
     node.update_height()     # Update this node's height
     return node, flag       # Return the updated node & insert flag
 
-  def rotate_right(self, top): # Rotate a subtree to the right
+  @classmethod
+  def rotate_right(cls, top): # Rotate a subtree to the right
     to_raise = top.left      # The node to raise is top's left child
     top.left = to_raise.right # The raised node's right crosses over
     to_raise.right = top     # to be the left subtree under the old
@@ -111,7 +114,8 @@ class AVLtree(object):
     to_raise.update_height()
     return to_raise          # Return raised node to update parent
 
-  def rotate_left(self, top): # Rotate a subtree to the left
+  @classmethod
+  def rotate_left(cls, top): # Rotate a subtree to the left
     to_raise = top.right     # The node to raise is top's right child
     top.right = to_raise.left # The raised node's left crosses over
     to_raise.left = top      # to be the right subtree under the old
@@ -119,46 +123,46 @@ class AVLtree(object):
     to_raise.update_height()
     return to_raise          # Return raised node to update parent
 
-  def traverse(self,         # Non-recursive generator to traverse
-               traverseType='in'): # tree in pre, in, or post order
-    if traverseType not in [ # Verify traversal type is an
+  def traverse(self,  # Non-recursive generator to traverse
+               traverse_type='in'): # tree in pre, in, or post order
+    if traverse_type not in [ # Verify traversal type is an
       'pre', 'in', 'post']: # accepted value
       raise ValueError(
-        "Unknown traversal type: " + str(traverseType))
+        "Unknown traversal type: " + str(traverse_type))
 
     stack =SimpleStack()         # Create a stack
-    stack.push(self.__root) # Put root node in stack
+    stack.push(self.root) # Put root node in stack
 
     while not stack.is_empty(): # While there is work in the stack
       item = stack.pop() # Get next item
       if isinstance(item, NodeAvl): # If it's a tree node
-        if traverseType == 'post': # For post-order, put it last
+        if traverse_type == 'post': # For post-order, put it last
           stack.push((item.key, item.data))
         stack.push(item.right) # Traverse right child
-        if traverseType == 'in': # For pre-order, put item 2nd
+        if traverse_type == 'in': # For pre-order, put item 2nd
           stack.push((item.key, item.data))
         stack.push(item.left)  # Traverse left child
-        if traverseType == 'pre': # For pre-order, put item 1st
+        if traverse_type == 'pre': # For pre-order, put item 1st
           stack.push((item.key, item.data))
       elif item:           # Every other non-None item is a
         yield item        # (key, value) pair to be yielded
 
-  def print(self,            # Print a tree sideways with 1 node
-            indentBy=4):     # on each line and indenting each level
-    self.__pTree(self.__root, # by some blanks.  Start at root node
-                 "", indentBy) # with no indent
+  def print(self,  # Print a tree sideways with 1 node
+            indent_by=4):     # on each line and indenting each level
+    self._print_subtree(self.root,  # by some blanks.  Start at root node
+                 "", indent_by) # with no indent
 
-  def __pTree(self,          # Recursively print a subtree, sideways
-              node,          # with the root node left justified
-              indent,        # using indent as prefix for its level
-              indentBy=4):   # Increase indent level for subtrees
+  def _print_subtree(self,  # Recursively print a subtree, sideways
+                     node,  # with the root node left justified
+                     indent,  # using indent as prefix for its level
+                     indent_by=4):   # Increase indent level for subtrees
     if node:                # Only print if there is a node
-      self.__pTree(node.right,  # Print the right subtree
-                   indent + " " * indentBy, indentBy)
+      self._print_subtree(node.right,  # Print the right subtree
+                          indent + " " * indent_by, indent_by)
       print(indent, node, '(',  # Print this node, its height, &
             node.height, node.compute_height_diff(), ')') # balance
-      self.__pTree(node.left,   # Print the left subtree
-                   indent + " " * indentBy, indentBy)
+      self._print_subtree(node.left,  # Print the left subtree
+                          indent + " " * indent_by, indent_by)
 
   def __str__(self):         # Show tree in string form as key-value
     return '{{{}}}'.format( # pairs surrounded in curly braces
@@ -167,24 +171,24 @@ class AVLtree(object):
                 for key, val in self.traverse('pre')))
 
   def delete(self, goal):    # Delete a node whose key matches goal
-    self.__root, flag = self.__delete( # Delete starting at root and
-      self.__root, goal)   # update root link
+    self.root, flag = self._delete( # Delete starting at root and
+      self.root, goal)   # update root link
     return flag             # Return flag indicating goal node found
 
-  def __delete(self,         # Delete matching goal key from subtree
+  def _delete(self,         # Delete matching goal key from subtree
                node, goal):  # rooted at node. Return modified node
     if node is None:        # If subtree is empty,
       return None, False   # then no matching goal key
 
     if goal < node.key:     # Is node to delete in left subtree?
-      node.left, flag = self.__delete( # If so, delete from left
+      node.left, flag = self._delete( # If so, delete from left
         node.left, goal)  # update the left link and store flag
-      node = self.__balanceLeft(node) # Correct any imbalance
+      node = self._balance_left(node) # Correct any imbalance
 
     elif goal > node.key:   # Is node to delete in right subtree?
-      node.right, flag = self.__delete( # If so, delete from right
+      node.right, flag = self._delete( # If so, delete from right
         node.right, goal) # update the right link and store flag
-      node = self.__balanceRight(node) # Correct any imbalance
+      node = self._balance_right(node) # Correct any imbalance
 
     # Else node's key matches goal, so determine deletion case
     elif node.left is None: # If no left child, return right child
@@ -193,26 +197,26 @@ class AVLtree(object):
       return node.left, True # as remainder, flagging deletion
     # Deleted node has two children so find successor in right
     else:                   # subtree and replace this item
-      node.key, node.data, node.right= self.__deleteMin(node.right)
-      node = self.__balanceRight(node) # Correct any imbalance
+      node.key, node.data, node.right= self._delete_min(node.right)
+      node = self._balance_right(node) # Correct any imbalance
       flag = True          # The goal was found and deleted
 
     node.update_height()     # Update height of node after deletion
     return node, flag       # Return modified node and delete flag
 
-  def __deleteMin(           # Find minimum node of subtree, delete
+  def _delete_min(           # Find minimum node of subtree, delete
           self,                # it, return minimum key, data pair and
           node):               # updated link to parent
     if node.left is None:   # If left child link is empty, then
       return (node.key, node.data, # this node is minimum and its
               node.right)  # right subtree, if any, replaces it
-    key, data, node.left = self.__deleteMin( # Else, delete minimum
+    key, data, node.left = self._delete_min( # Else, delete minimum
       node.left)           # from left subtree
-    node = self.__balanceLeft(node) # Correct any imbalance
+    node = self._balance_left(node) # Correct any imbalance
     node.update_height()     # Update height of node
-    return (key, data, node)
+    return key, data, node
 
-  def __balanceLeft(self, node): # Rebalance after left deletion
+  def _balance_left(self, node): # Rebalance after left deletion
     if node.compute_height_diff() < -1: # If node is right heavy, then
       if node.right.compute_height_diff() > 0: # If the right child is left
         node.right = self.rotate_right( # heavy, then rotate
@@ -222,7 +226,7 @@ class AVLtree(object):
         node)             # rotating left around this node
     return node             # Return top node
 
-  def __balanceRight(self, node): # Rebalance after right deletion
+  def _balance_right(self, node): # Rebalance after right deletion
     if node.compute_height_diff() > 1: # If node is left heavy, then
       if node.left.compute_height_diff() < 0: # If the left child is right
         node.left = self.rotate_left( # heavy, then rotate
