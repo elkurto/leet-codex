@@ -38,8 +38,6 @@ class NodeAvl(object):      # A node in an AVL tree
 
 class AVLTree(object):
 
-
-
   def __init__(self):        # Constructor for empty AVL tree
     self.root = None      # No root node in empty tree
 
