@@ -36,7 +36,7 @@ class NodeAvl(object):      # A node in an AVL tree
   def __str__(self):      # Represent a node as a string using a
     return 'AVL>' + str(self.key) # prefix and its key
 
-class AVLtree(object):
+class AVLTree(object):
 
 
 
@@ -63,13 +63,13 @@ class AVLtree(object):
     return node.data if node else None
 
   def insert(self, key, data): # Insert an item into the AVL tree
-    self.root, flag = self.__insert( # Reset the root to be the
+    self.root, flag = self._insert( # Reset the root to be the
       self.root, key, data) # modified tree and return the
     return flag             # the insert vs. update flag
 
-  def __insert(self,         # Insert an item into an AVL subtree
-               node,         # rooted a particular node, returning
-               key, data):   # the modified node & insertion flag
+  def _insert(self,  # Insert an item into an AVL subtree
+              node,  # rooted a particular node, returning
+              key, data):   # the modified node & insertion flag
     if node is None:        # For an empty subtree, return a new
       return NodeAvl(key, data), True # node in the tree
 
@@ -78,7 +78,7 @@ class AVLtree(object):
       return node, False   # Return the node and False for flag
 
     elif key < node.key:    # Does the key belong in left subtree?
-      node.left, flag = self.__insert( # If so, insert on left and
+      node.left, flag = self._insert( # If so, insert on left and
         node.left, key, data) # update the left link
       if node.compute_height_diff() > 1: # If insert made node left heavy
 
@@ -91,7 +91,7 @@ class AVLtree(object):
         node = self.rotate_right( node)
 
     else:                   # Otherwise key belongs in right subtree
-      node.right, flag = self.__insert( # Insert it on right and
+      node.right, flag = self._insert( # Insert it on right and
         node.right, key, data) # update the right link
       if node.compute_height_diff() < -1: # If insert made node right heavy
 
