@@ -49,7 +49,7 @@ class TestAvlTree(unittest.TestCase):
 
     self.assertEqual( 'zzz', a.search('z'))
     self.assertEqual( 'm', a.root.key)
-    
+
   def test_delete(self):
     a =AVLTree()
     for char in "searchxmploz":
@@ -72,6 +72,28 @@ class TestAvlTree(unittest.TestCase):
 
     self.assertEqual( 'zzz', a.search('z'))
     self.assertTrue( a.delete('z'))
+    self.assertIsNone(  a.search('z'))
+
+    # delete interior node, r
+    self.assertEqual( 'r' , a.root.right.key )
+    b_did_delete =a.delete('r')
+    self.assertTrue( b_did_delete)
+    # node:s replaces node:r because s is the successor of r.
+    self.assertEqual( 's' , a.root.right.key )
+
+
+
+    a.print(2)
+    #      AVL>x ( 1 0 )
+    #    AVL>s ( 3 1 )
+    #      AVL>p ( 2 1 )
+    #        AVL>o ( 1 0 )
+    #  AVL>m ( 4 0 )
+    #        AVL>l ( 1 0 )
+    #      AVL>h ( 2 -1 )
+    #    AVL>e ( 3 0 )
+    #        AVL>c ( 1 0 )
+    #      AVL>a ( 2 -1 )
 
 if __name__ == "__main__":
   unittest.main()

@@ -235,11 +235,14 @@ class AVLTree(object):
   def _delete_min(           # Find minimum node of subtree, delete
           self,                # it, return minimum key, data pair and
           node):               # updated link to parent
-    if node.left is None:   # If left child link is empty, then
-      return (node.key, node.data, # this node is minimum and its
-              node.right)  # right subtree, if any, replaces it
-    key, data, node.left = self._delete_min( # Else, delete minimum
-      node.left)           # from left subtree
+    if node.left is None:   # If left child link is empty
+      # , then node contains min_key
+      #   and node.right replaces node.
+      return node.key, node.data, node.right
+
+    # Else, continue search for min_key in left subtree
+    key, data, node.left = self._delete_min( node.left)
+
     node = self._balance_left(node) # Correct any imbalance
     node.update_height()     # Update height of node
     return key, data, node
