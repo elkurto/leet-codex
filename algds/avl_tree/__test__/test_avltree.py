@@ -47,5 +47,7 @@ class TestAvlTree(unittest.TestCase):
       a.insert(char, char*3)
       a.print(2)
 
+  
+
 if __name__ == "__main__":
   unittest.main()

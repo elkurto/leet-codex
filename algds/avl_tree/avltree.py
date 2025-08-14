@@ -190,23 +190,32 @@ class AVLTree(object):
                 for key, val in self.traverse('pre')))
 
   def delete(self, goal):    # Delete a node whose key matches goal
-    self.root, flag = self._delete( # Delete starting at root and
-      self.root, goal)   # update root link
+
+    # Delete starting at root and  update root link
+    self.root, flag = self._delete(  self.root, goal)
+       
     return flag             # Return flag indicating goal node found
 
-  def _delete(self,         # Delete matching goal key from subtree
-               node, goal):  # rooted at node. Return modified node
+  def _delete(self,  node, goal):
+    # Delete matching goal key from subtree  rooted at node.
+    # Return modified node
     if node is None:        # If subtree is empty,
       return None, False   # then no matching goal key
 
-    if goal < node.key:     # Is node to delete in left subtree?
-      node.left, flag = self._delete( # If so, delete from left
-        node.left, goal)  # update the left link and store flag
+    if goal < node.key:
+      # then continue search for goal in left-subtree.
+
+      # If goal exists, then delete goal, update the left link and store flag
+      node.left, flag = self._delete( node.left, goal)
+
       node = self._balance_left(node) # Correct any imbalance
 
-    elif goal > node.key:   # Is node to delete in right subtree?
-      node.right, flag = self._delete( # If so, delete from right
-        node.right, goal) # update the right link and store flag
+    elif goal > node.key:
+      # then continue search for goal in left-subtree.
+
+      # If goal exists, then delete goal, update the right link and store flag
+      node.right, flag = self._delete(node.right, goal)
+
       node = self._balance_right(node) # Correct any imbalance
 
     # Else node's key matches goal, so determine deletion case
