@@ -47,7 +47,31 @@ class TestAvlTree(unittest.TestCase):
       a.insert(char, char*3)
       a.print(2)
 
-  
+    self.assertEqual( 'zzz', a.search('z'))
+    self.assertEqual( 'm', a.root.key)
+    
+  def test_delete(self):
+    a =AVLTree()
+    for char in "searchxmploz":
+      a.insert(char, char*3)
+    #end-for
+
+    a.print(2)
+    #        AVL>z ( 1 0 )
+    #      AVL>x ( 2 0 )
+    #        AVL>s ( 1 0 )
+    #    AVL>r ( 3 0 )
+    #      AVL>p ( 2 1 )
+    #        AVL>o ( 1 0 )
+    #  AVL>m ( 4 0 )
+    #        AVL>l ( 1 0 )
+    #      AVL>h ( 2 -1 )
+    #    AVL>e ( 3 0 )
+    #        AVL>c ( 1 0 )
+    #      AVL>a ( 2 -1 )
+
+    self.assertEqual( 'zzz', a.search('z'))
+    self.assertTrue( a.delete('z'))
 
 if __name__ == "__main__":
   unittest.main()
