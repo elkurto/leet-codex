@@ -105,15 +105,36 @@ class AVLTree(object):
 
   @classmethod
   def rotate_right(cls, top): # Rotate a subtree to the right
-    to_raise = top.left      # The node to raise is top's left child
-    top.left = to_raise.right # The raised node's right crosses over
-    to_raise.right = top     # to be the left subtree under the old
-    top.update_height()      # top.  Then the heights must be updated
+    """
+                                                      +-p
+                                                     o
+          +-p    rotate_right( top=m )              / +-n
+         o        - to_raise =b (top.left)         m
+        / +-n     - m.left =c (to_raise.right)    / +-c
+       m          - b.right =m (top)             b
+        \ +-c     - update_heights                +-a
+         b        - return b (to_raise) so that
+          +-a        parent can update ref_to_child.
+    """
+    to_raise = top.left       # to_raise =k  # The node to raise is top's left child
+    top.left = to_raise.right # m.left =c    # The raised node's right crosses over
+    to_raise.right = top      # k.right =m   # to be the left subtree under the old
+    top.update_height()       #              # top.  Then the heights must be updated
     to_raise.update_height()
     return to_raise          # Return raised node to update parent
 
   @classmethod
   def rotate_left(cls, top): # Rotate a subtree to the left
+    """
+          +-p   rotate_left( top=m )                   +-p
+        o        - to_raise =o (top.right)           o
+       /  +-n*   - m.right  =n*(to_raise.left)        \  +-n*
+      m          - o.left   =m (top)                   m
+       \  +-c    - update_heights                       \  +-c
+        b        - return o (to_raise) so that           b
+          +-a        parent can update ref_to_child.       +-a
+
+    """
     to_raise = top.right     # The node to raise is top's right child
     top.right = to_raise.left # The raised node's left crosses over
     to_raise.left = top      # to be the right subtree under the old
