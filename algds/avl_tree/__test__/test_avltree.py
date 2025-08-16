@@ -105,6 +105,9 @@ class TestAvlTree(unittest.TestCase):
     self.assertEqual( 'z', key)
     self.assertEqual( 'zzz', data)
 
+    key,data =a.remove('r')
+    self.assertEqual( 'r', key)
+    self.assertEqual( 'rrr', data)
 
 
 if __name__ == "__main__":
