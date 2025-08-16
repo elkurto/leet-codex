@@ -204,8 +204,9 @@ class AVLTree(object):
     target_data =None
 
     if node_target:
-      self.delete(goal=target_key)
       target_data =node_target.data
+      self.delete(goal=target_key)
+
 
     return (target_key,target_data) if node_target else (None,None)
 

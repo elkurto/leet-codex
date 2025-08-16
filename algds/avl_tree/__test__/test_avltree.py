@@ -95,6 +95,22 @@ class TestAvlTree(unittest.TestCase):
     #        AVL>c ( 1 0 )
     #      AVL>a ( 2 -1 )
 
+
+  def test_find_node(self):
+    a =AVLTree()
+    for char in "searchxmploz":
+      a.insert(char, char*3)
+    #end-for
+
+    key,data =a.remove('z')
+    self.assertEqual( 'z', key)
+    self.assertEqual( 'zzz', data)
+
+    key,data =a.remove('r')
+    self.assertEqual( 'r', key)
+    self.assertEqual( 'rrr', data)
+
+
   def test_remove(self):
     a =AVLTree()
     for char in "searchxmploz":
@@ -108,6 +124,16 @@ class TestAvlTree(unittest.TestCase):
     key,data =a.remove('r')
     self.assertEqual( 'r', key)
     self.assertEqual( 'rrr', data)
+
+  def test_remove_no_such_key(self):
+    a =AVLTree()
+    for char in "searchxmploz":
+      a.insert(char, char*3)
+    #end-for
+
+    key,data =a.remove('no-such-key')
+    self.assertIsNone(  key)
+    self.assertIsNone(  data)
 
 
 if __name__ == "__main__":
