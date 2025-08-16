@@ -60,6 +60,10 @@ class AVLTree(object):
     # Return the node's data, if found
     return node.data if node else None
 
+  def find_node(self, goal):
+    node = self.__find(goal, self.root)
+    return node
+
   def insert(self, key, data): # Insert an item into the AVL tree
     self.root, flag = self._insert( # Reset the root to be the
       self.root, key, data) # modified tree and return the
@@ -189,6 +193,22 @@ class AVLTree(object):
         repr(key), repr(val))
                 for key, val in self.traverse('pre')))
 
+  def remove(self, target_key):
+    """
+    :param target_key: the node.key to remove (if existent)
+    :return: target_key,target_data if node found and removed
+             Otherwise return None,None -- to indicate no such node
+    """
+
+    node_target =self.find_node(target_key)
+    target_data =None
+
+    if node_target:
+      self.delete(goal=target_key)
+      target_data =node_target.data
+
+    return target_key,target_data if node_target else None,None
+
   def delete(self, goal):    # Delete a node whose key matches goal
 
     # Delete starting at root and  update root link
@@ -220,9 +240,10 @@ class AVLTree(object):
 
     # Else node's key matches goal, so determine deletion case
     elif node.left is None: # If no left child, return right child
-      return node.right, True # as remainder, flagging deletion
+      return node.right, True # as successor, flagging deletion
     elif node.right is None: # If no right child, return left child
-      return node.left, True # as remainder, flagging deletion
+      return node.left, True # as successor, flagging deletion
+
     # Deleted node has two children so find successor in right
     else:                   # subtree and replace this item
       node.key, node.data, node.right= self._delete_min(node.right)
@@ -232,9 +253,11 @@ class AVLTree(object):
     node.update_height()     # Update height of node after deletion
     return node, flag       # Return modified node and delete flag
 
-  def _delete_min(           # Find minimum node of subtree, delete
-          self,                # it, return minimum key, data pair and
-          node):               # updated link to parent
+  def _delete_min( self, node ):
+    # Find minimum node of subtree, then delete
+    # This method returns minimum key and data
+    # So that the parent can update its child link.
+
     if node.left is None:   # If left child link is empty
       # , then node contains min_key
       #   and node.right replaces node.
