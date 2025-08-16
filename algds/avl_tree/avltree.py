@@ -207,7 +207,7 @@ class AVLTree(object):
       self.delete(goal=target_key)
       target_data =node_target.data
 
-    return target_key,target_data if node_target else None,None
+    return (target_key,target_data) if node_target else (None,None)
 
   def delete(self, goal):    # Delete a node whose key matches goal
 

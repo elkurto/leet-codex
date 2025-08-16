@@ -95,5 +95,17 @@ class TestAvlTree(unittest.TestCase):
     #        AVL>c ( 1 0 )
     #      AVL>a ( 2 -1 )
 
+  def test_remove(self):
+    a =AVLTree()
+    for char in "searchxmploz":
+      a.insert(char, char*3)
+    #end-for
+
+    key,data =a.remove('z')
+    self.assertEqual( 'z', key)
+    self.assertEqual( 'zzz', data)
+
+
+
 if __name__ == "__main__":
   unittest.main()
